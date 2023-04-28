@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FashionAPI.Web", "FashionAP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FashionWebAPI.Infrastructure", "FashionWebAPI.Infrastructure\FashionWebAPI.Infrastructure.csproj", "{CAAF88BB-4A09-4294-934D-C6C53A79EBF2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FashionWebApi.Test", "FashionWebApi.Test\FashionWebApi.Test.csproj", "{AE4BA825-D685-4FE6-BC8C-80B7CAB126B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{CAAF88BB-4A09-4294-934D-C6C53A79EBF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAAF88BB-4A09-4294-934D-C6C53A79EBF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAAF88BB-4A09-4294-934D-C6C53A79EBF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE4BA825-D685-4FE6-BC8C-80B7CAB126B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE4BA825-D685-4FE6-BC8C-80B7CAB126B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE4BA825-D685-4FE6-BC8C-80B7CAB126B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE4BA825-D685-4FE6-BC8C-80B7CAB126B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
