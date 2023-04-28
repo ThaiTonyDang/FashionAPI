@@ -1,7 +1,10 @@
+using FashionWebAPI.Infrastructure.DataContext;
+using FashionWebAPI.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,12 +29,15 @@ namespace FashionAPI.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FashionAPI.Web", Version = "v1" });
             });
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddDbContext<AppDbContext>(x =>
+                                               x.UseSqlServer(Configuration.GetConnectionString("FashionWeb")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
