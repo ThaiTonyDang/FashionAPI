@@ -1,8 +1,8 @@
-﻿using FashionWebAPI.Infrastructure.DataContext;
-using FashionWebAPI.Infrastructure.Models;
+﻿using Infrastructure.DataContext;
+using Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace FashionWebAPI.Infrastructure.Repositories
+namespace Infrastructure.Repositories
 {
     public class CategoryRepository : ICategoryRepository
     {

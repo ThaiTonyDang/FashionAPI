@@ -1,6 +1,6 @@
-﻿using FashionWebAPI.Infrastructure.DataContext;
-using FashionWebAPI.Infrastructure.Models;
-using FashionWebAPI.Infrastructure.Repositories;
+﻿using Infrastructure.DataContext;
+using Infrastructure.Models;
+using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -45,6 +45,36 @@ namespace FashionWebApi.Test.RepositoriesTest
 			var firtItemAct = productListAct.FirstOrDefault();
 
 			Assert.Equal(firtItemExpect!.Name, firtItemAct!.Name);
+		}
+
+		[Fact]
+		public async Task Should_DeleteProductAsync_Return_Succes()
+		{
+			// Arrange
+			var product = LoadProducSampletData()[0];
+			var COUNT_EXPEXT = 2;
+
+			// Act
+			var isSuccess = await _productRepository.DeleteAsync(product.Id);
+
+			// Assert
+			Assert.True(isSuccess);
+			Assert.Equal(COUNT_EXPEXT, _dbContext.Products.ToList().Count);
+		}
+
+		[Fact]
+		public async Task Should_DeleteProductAsync_Return_Fail_When_Id_Not_Found()
+		{
+			// Arrange
+			var id = Guid.Parse("563432ff-efc8-4580-b681-4ec31dfb79b8");
+			var COUNT_EXPEXT = 3;
+
+			// Act
+			var isSuccess = await _productRepository.DeleteAsync(id);
+
+			// Assert
+			Assert.False(isSuccess);
+			Assert.Equal(COUNT_EXPEXT, _dbContext.Products.ToList().Count);
 		}
 
 		private List<Product> LoadProducSampletData()

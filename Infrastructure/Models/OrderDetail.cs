@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FashionWebAPI.Infrastructure.Models
+namespace Infrastructure.Models
 {
     public class OrderDetail
     {

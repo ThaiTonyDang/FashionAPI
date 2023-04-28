@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace FashionWebAPI.Infrastructure.Migrations
+namespace Infrastructure.Migrations
 {
     public partial class InitDb : Migration
     {

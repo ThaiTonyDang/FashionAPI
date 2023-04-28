@@ -1,6 +1,6 @@
-﻿using FashionWebAPI.Infrastructure.Models;
+﻿using Infrastructure.Models;
 
-namespace FashionWebAPI.Infrastructure.Repositories
+namespace Infrastructure.Repositories
 {
     public interface IProductRepository
     {

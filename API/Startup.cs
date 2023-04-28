@@ -1,5 +1,5 @@
-using FashionWebAPI.Infrastructure.DataContext;
-using FashionWebAPI.Infrastructure.Repositories;
+using Infrastructure.DataContext;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
