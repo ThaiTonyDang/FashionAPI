@@ -36,7 +36,7 @@ namespace FashionWebAPI.Infrastructure.Repositories
             return _appDbContext.Products.ToListAsync();
         }
 
-        public async Task<bool> EditAsync(Product product)
+        public async Task<bool> UpdateAsync(Product product)
         {
             var productEntity = await GetProductByIdAsync(product.Id);
 

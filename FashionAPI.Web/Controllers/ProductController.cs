@@ -1,5 +1,7 @@
-﻿using FashionWebAPI.Infrastructure.Repositories;
+﻿using FashionWebAPI.Infrastructure.Models;
+using FashionWebAPI.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace FashionAPI.Web.Controllers
@@ -15,7 +17,7 @@ namespace FashionAPI.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProducts()
+        public async Task<IActionResult> GetListProducts()
         {
             try
             {
@@ -31,6 +33,33 @@ namespace FashionAPI.Web.Controllers
             {
                 return BadRequest();
             }
+        }
+
+        [HttpPut]
+        [Route("{productId}")]
+        public async Task<IActionResult> UpdateProduct(Product product)
+        {
+            var productEntity = await _productRepository.GetProductByIdAsync(product.Id);
+            if (productEntity == null)
+            {
+                return NotFound();
+            }
+
+            var isSuccess = await _productRepository.UpdateAsync(productEntity);
+
+            if (isSuccess)
+            {
+                return Ok(new
+                {
+                    Success = true,
+                    Data = productEntity
+                });
+            }
+
+            return BadRequest(new
+            {
+                Success = false
+            });
         }
     }
 }

@@ -47,6 +47,49 @@ namespace FashionWebApi.Test.RepositoriesTest
 			Assert.Equal(firtItemExpect!.Name, firtItemAct!.Name);
 		}
 
+		[Fact]
+		public async Task Should_AddProductAsync_Return_Succsess()
+		{
+			// Arrange
+			var product = LoadProducSampletData()[0];
+
+			// Act
+			string name = "ABC";
+			var enable = true;
+
+			product.Name = name;
+			product.Enable = enable;
+
+			var isEditSuccess = await _productRepository.UpdateAsync(product);
+
+			// Assert
+
+			Assert.True(isEditSuccess);
+			Assert.Equal(name, product.Name);
+			Assert.Equal(enable, product.Enable);
+		}
+
+		[Fact]
+		public async Task Should_AddProductAsync_Return_Fail_When_Id_Null()
+		{
+			// Arrange
+			var product = LoadProducSampletData()[0];
+			product.Id = default(Guid);
+
+			// Act
+			string name = "ABC";
+			var enable = true;
+
+			product.Name = name;
+			product.Enable = enable;
+
+			var isEditSuccess = await _productRepository.UpdateAsync(product);
+
+			// Assert
+			Assert.False(isEditSuccess);
+		}
+
+
 		private List<Product> LoadProducSampletData()
 		{
 			var listCates = LoadCategorySampleData();
