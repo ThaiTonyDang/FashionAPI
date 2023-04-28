@@ -1,4 +1,5 @@
-﻿using FashionWebAPI.Infrastructure.Repositories;
+﻿using FashionWebAPI.Infrastructure.Models;
+using FashionWebAPI.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -31,6 +32,26 @@ namespace FashionAPI.Web.Controllers
             {
                 return BadRequest();
             }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Creat(Product product)
+        {
+            var isSuccess = await _productRepository.AddAsync(product);
+
+            if (isSuccess)
+            {
+                return Ok(new
+                {
+                    Success = true,
+                    Data = product
+                });
+            }
+
+            return BadRequest(new
+            {
+                Success = false
+            });
         }
     }
 }
