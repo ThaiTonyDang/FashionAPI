@@ -19,7 +19,7 @@ namespace FashionAPI.Web.Controllers
         {
             try
             {
-                var products = await _productRepository.Products();
+                var products = await _productRepository.GetListProducts();
 
                 if (products == null)
                 {

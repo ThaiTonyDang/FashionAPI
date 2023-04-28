@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace ChelseaWeb.Tests.RepositoriesTest
+namespace FashionWebApi.Test.RepositoriesTest
 {
 	public class ProductRepositoryTest
 	{
@@ -36,7 +36,7 @@ namespace ChelseaWeb.Tests.RepositoriesTest
 			var productListExpect = LoadProducSampletData();
 
 			// Act
-			var productListAct = await _productRepository.Products();
+			var productListAct = await _productRepository.GetListProducts();
 
 			// Assert
 			Assert.Equal(productListExpect.Count, productListAct.Count);

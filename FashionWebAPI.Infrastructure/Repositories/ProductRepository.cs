@@ -31,7 +31,7 @@ namespace FashionWebAPI.Infrastructure.Repositories
             return false;
         }
 
-        public Task<List<Product>> Products()
+        public Task<List<Product>> GetListProducts()
         {
             return _appDbContext.Products.ToListAsync();
         }
