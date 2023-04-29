@@ -1,4 +1,4 @@
-﻿using FashionWebAPI.Infrastructure.Models;
+﻿using Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FashionWebAPI.Infrastructure.DataContext
+namespace Infrastructure.DataContext
 {
     public class AppDbContext : DbContext
     {

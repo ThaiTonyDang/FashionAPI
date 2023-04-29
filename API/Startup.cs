@@ -1,7 +1,13 @@
+using Domain.Services;
+using Infrastructure.Config;
+using Infrastructure.DataContext;
+using Infrastructure.FileHelpers;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,7 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FashionAPI.Web
+namespace API
 {
     public class Startup
     {
@@ -26,12 +32,19 @@ namespace FashionAPI.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FashionAPI.Web", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
             });
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IFileService, FileService>();
+
+            services.Configure<FileConfig>(Configuration.GetSection("FileConfig"));
+            services.AddDbContext<AppDbContext>(x =>
+                                               x.UseSqlServer(Configuration.GetConnectionString("FashionWeb")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
