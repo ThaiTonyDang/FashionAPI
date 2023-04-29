@@ -9,9 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FashionWebAPI.Infrastructure\FashionWebAPI.Infrastructure.csproj" />
-    <ProjectReference Include="..\FashionWebAPI.Infrastructure\Infrastructure.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
 </Project>

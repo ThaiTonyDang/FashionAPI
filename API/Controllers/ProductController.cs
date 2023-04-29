@@ -1,26 +1,29 @@
-﻿using Infrastructure.Repositories;
+﻿using Domain.Services;
+using Domain.ViewModels;
+using Infrastructure.Models;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 
-namespace FashionAPI.Web.Controllers
+namespace API.Controllers
 {
-    [Route("api/[controller]/[action]/")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly IProductRepository _productRepository;
-        public ProductController(IProductRepository productRepository)
+        private readonly IProductService _productService;
+        public ProductController(IProductService productService)
         {
-            _productRepository = productRepository;
+            _productService = productService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProducts()
+        public async Task<IActionResult> GetListProducts()
         {
             try
             {
-                var products = await _productRepository.GetListProducts();
+                var products = await _productService.GetListProductsAsync();
 
                 if (products == null)
                 {
@@ -35,18 +38,10 @@ namespace FashionAPI.Web.Controllers
             }
         }
 
-        [HttpDelete]
-        [Route("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpPost]
+        public async Task<IActionResult> Creat(ProductItemViewModel product)
         {
-
-            var product = await _productRepository.GetProductByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            var isSuccess = await _productRepository.DeleteAsync(id);
+            var isSuccess = await _productService.AddProductAsync(product);
 
             if (isSuccess)
             {
@@ -55,9 +50,37 @@ namespace FashionAPI.Web.Controllers
                     Success = true,
                     Data = product
                 });
-            }    
+            }
 
-            return BadRequest();        
+            return BadRequest(new
+            {
+                Success = false
+            });
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+
+            var product = await _productService.GetProductItemByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var isSuccess = await _productService.DeleteProductAsync(id);
+
+            if (isSuccess)
+            {
+                return Ok(new
+                {
+                    Success = true,
+                    Data = product
+                });
+            }
+
+            return BadRequest();
         }
     }
 }

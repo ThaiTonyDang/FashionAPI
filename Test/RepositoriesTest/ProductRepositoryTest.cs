@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace FashionWebApi.Test.RepositoriesTest
+namespace Test.RepositoriesTest
 {
 	public class ProductRepositoryTest
 	{
