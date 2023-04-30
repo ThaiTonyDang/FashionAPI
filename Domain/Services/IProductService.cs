@@ -1,19 +1,14 @@
-﻿using Domain.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.DTO;
 
 namespace Domain.Services
 {
-	public interface IProductService
+    public interface IProductService
 	{
-		public Task<bool> AddProductAsync(ProductItemViewModel productItemViewModel);
-		public Task<List<ProductItemViewModel>> GetListProductsAsync();
-		public Task<ProductViewModel> GetProductViewModel();
-		public Task<bool> EditProductAsync(ProductItemViewModel productItemViewModel);
-		public Task<bool> DeleteProductAsync(Guid id);
-		public Task<ProductItemViewModel> GetProductItemByIdAsync(Guid id);
+		public Task<bool> AddProductAsync(ProductDto product);
+		//public Task<List<ProductDto>> GetListProductsAsync();
+		//public Task<ProductDto> GetProductViewModel();
+		//public Task<bool> EditProductAsync(ProductDto productItemViewModel);
+		//public Task<bool> DeleteProductAsync(Guid id);
+		//public Task<ProductDto> GetProductItemByIdAsync(Guid id);
 	}
 }

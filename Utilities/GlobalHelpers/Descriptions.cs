@@ -10,6 +10,6 @@ namespace Utilities.GlobalHelpers
     {
         public const string ENABLE = "ENABLE";
         public const string DISABLE = "DISABLE";
-        public const string DEFAULT_IMAGE_PATH = "product-defaut.png";
+        public const string DEFAULT_IMAGE = "product-defaut.png";
     }
 }

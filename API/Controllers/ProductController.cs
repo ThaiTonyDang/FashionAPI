@@ -1,5 +1,5 @@
-﻿using Domain.Services;
-using Infrastructure.Repositories;
+﻿using Domain.DTO;
+using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -15,23 +15,15 @@ namespace API.Controllers
             _productService = productService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetListProducts()
+        [HttpPost]
+        public async Task<IActionResult> Create(ProductDto product)
         {
-            try
-            {
-                var products = await _productService.GetListProductsAsync();
+            var result = await _productService.AddProductAsync(product);
 
-                if (products == null)
-                {
-                    return NotFound();
-                }
-                return Ok(products);
-            }
-            catch
-            {
-                return BadRequest();
-            }
+            if (result) 
+                return Ok();
+
+            return BadRequest();
         }
     }
 }

@@ -4,6 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
+    public class ProductException : Exception
+    {
+        public ProductException(string message) : base(message)
+        {
+            
+        }
+    }
+
     public class ProductRepository : IProductRepository        
     {
         private readonly AppDbContext _appDbContext;
@@ -14,6 +22,11 @@ namespace Infrastructure.Repositories
 
         public async Task<bool> AddAsync(Product product)
         {
+            if(product == null)
+            {
+               throw new ProductException("Product can not be null");
+            }
+
             if (product.Id == default(Guid) || product.CategoryId == default(Guid))
                 return false;
 
@@ -38,6 +51,14 @@ namespace Infrastructure.Repositories
 
         public async Task<bool> EditAsync(Product product)
         {
+            if (product == null)
+            {
+                throw new ProductException("Product can not be null");
+            }
+
+            if (product.Id == default(Guid) || product.CategoryId == default(Guid))
+                return false;
+
             var productEntity = await GetProductByIdAsync(product.Id);
 
             if (productEntity != null)
@@ -49,9 +70,8 @@ namespace Infrastructure.Repositories
                 productEntity.Description = product.Description;
                 productEntity.CategoryId = product.CategoryId;
                 productEntity.ImagePath = product.ImagePath;
-                productEntity.Type = product.Type;
-                productEntity.UnitsInStock = product.UnitsInStock;
-                productEntity.Enable = product.Enable;
+                productEntity.QuantityInStock = product.QuantityInStock;
+                productEntity.IsEnabled = product.IsEnabled;
 
                 _appDbContext.Update(productEntity);
                 var result = _appDbContext.SaveChanges();
