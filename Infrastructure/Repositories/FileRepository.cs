@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Config;
+using Infrastructure.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System.IO;
@@ -12,21 +13,12 @@ namespace Infrastructure.Repositories
         public FileException(string message) : base(message) { }
     }
 
-    public class FileService : IFileService
+    public class FileRepository : IFileRepository
     {
         private readonly FileConfig _systemConfig;
-        public FileService(IOptions<FileConfig> options)
+        public FileRepository(IOptions<FileConfig> options)
         {
             _systemConfig = options.Value;
-        }
-
-        public Task<string> GetImagePath(string fileName)
-        {
-            if (string.IsNullOrEmpty(fileName))
-                return Task.FromResult(DISPLAY.DEFAULT_IMAGE);
-
-            var path = GetFilePath(fileName);
-            return Task.FromResult(path);
         }
 
         public async Task SaveFile(string folder, string imagePath, byte[] data)
@@ -34,6 +26,13 @@ namespace Infrastructure.Repositories
             if (data == null || data.Length <= 0)
                 throw new FileException("File must be contain data");
 
+
+            if (!File.Exists(fullPath))
+                await File.WriteAllBytesAsync(fullPath, data);
+        }
+
+        private async Task GetFullPath(string imagePath, string folder)
+        {
             var systemPath = GetSystemPath();
             var imageFolder = Path.Combine(systemPath, folder);
 
@@ -41,8 +40,6 @@ namespace Infrastructure.Repositories
                 Directory.CreateDirectory(imageFolder);
 
             var fullPath = Path.Combine(imageFolder, imagePath);
-            if (!File.Exists(fullPath))
-                await File.WriteAllBytesAsync(fullPath, data);
         }
 
         public string GetFilePath(string fileName)

@@ -2,11 +2,10 @@
 
 namespace Infrastructure.Repositories
 {
-    public interface IFileService
+    public interface IFileRepository
     {
         public string GetSystemPath();
         public Task SaveFile(string folderExtra, string filePath, byte[] data);
         public string GetFilePath(string fileName);
-        Task<string> GetImagePath(string fileName);
     }
 }

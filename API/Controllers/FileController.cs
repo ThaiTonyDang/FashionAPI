@@ -1,4 +1,5 @@
 ﻿using API.Extensions;
+using Domain.Services;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,11 +22,12 @@ namespace API.Controllers
         public async Task<IActionResult> SaveFile([FromForm]IFormFile file, [FromForm]string folder)
         {
             var fileName = file.FileName;
-            var imagePath = await _fileService.GetImagePath(fileName);
+            var fullPath = await _fileService.GetImagePath(fileName);
+
             if(file != null)
             {
                 var data = await file.GetBytes();
-                await this._fileService.SaveFile(folder, imagePath, data);
+                await this._fileService.SaveFile(fullPath, data);
             }
 
             return Ok(new {

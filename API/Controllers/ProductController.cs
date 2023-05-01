@@ -18,6 +18,9 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(ProductDto product)
         {
+            // TODO: custome validaion
+            // TODO: middleware exception
+            throw new System.Exception("Test");
             var result = await _productService.AddProductAsync(product);
 
             if (result) 
@@ -25,5 +28,7 @@ namespace API.Controllers
 
             return BadRequest();
         }
+
+        // TODO: Get list, Edit, Delete
     }
 }

@@ -39,7 +39,7 @@ namespace API
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductService, ProductService>();
-            services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IFileRepository, FileRepository>();
 
             services.Configure<FileConfig>(Configuration.GetSection("FileConfig"));
             services.AddDbContext<AppDbContext>(x =>
