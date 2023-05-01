@@ -12,4 +12,9 @@ namespace Utilities.GlobalHelpers
         public const string DISABLE = "DISABLE";
         public const string DEFAULT_IMAGE = "product-defaut.png";
     }
+
+    public struct HTTTP
+    {
+        public const string SLUG = "resource";
+    }
 }

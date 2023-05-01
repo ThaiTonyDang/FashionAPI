@@ -1,10 +1,8 @@
 ﻿using Infrastructure.Config;
 using Infrastructure.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System.IO;
 using Utilities.GlobalHelpers;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Infrastructure.Repositories
 {
@@ -21,45 +19,43 @@ namespace Infrastructure.Repositories
             _systemConfig = options.Value;
         }
 
-        public async Task SaveFile(string folder, string imagePath, byte[] data)
+        public async Task SaveFile(string path, byte[] data)
         {
             if (data == null || data.Length <= 0)
                 throw new FileException("File must be contain data");
 
-
-            if (!File.Exists(fullPath))
-                await File.WriteAllBytesAsync(fullPath, data);
+            if (!File.Exists(path))
+                await File.WriteAllBytesAsync(path, data);
         }
 
-        private async Task GetFullPath(string imagePath, string folder)
+        public string GetFullPath(string filePath)
         {
             var systemPath = GetSystemPath();
-            var imageFolder = Path.Combine(systemPath, folder);
 
-            if (!Directory.Exists(systemPath) || !Directory.Exists(imageFolder))
-                Directory.CreateDirectory(imageFolder);
+            if (!Directory.Exists(systemPath))
+                Directory.CreateDirectory(systemPath);
 
-            var fullPath = Path.Combine(imageFolder, imagePath);
+            var fullPath = Path.Combine(systemPath, filePath);
+            return fullPath;
         }
 
-        public string GetFilePath(string fileName)
+        public async Task<byte[]> GetFileBytes(string fileName)
         {
-            if (string.IsNullOrEmpty(fileName))
-                return string.Empty;
+            var hostUrl = GetSystemPath();
+            var fileUrl = Path.Combine(hostUrl, fileName);
+           
+            if (Directory.Exists(hostUrl) && File.Exists(fileUrl))
+            {
+                var fileBytes = await File.ReadAllBytesAsync(fileUrl);
+                return fileBytes;
+            }
 
-            var dateTime = DateTime.Now.ToString("yyyyMMddhhmmss");
-            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-            var extensions = Path.GetExtension(fileName);
-
-            var filePath = fileNameWithoutExtension.Replace(" ", "").Trim() + dateTime + extensions;
-            return filePath;
+            return default;
         }
 
-        public string GetSystemPath()
+        private string GetSystemPath()
         {
             return _systemConfig.ImagePath;
         }
-
-        
     }
 }

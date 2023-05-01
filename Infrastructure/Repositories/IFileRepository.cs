@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace Infrastructure.Repositories
+﻿namespace Infrastructure.Repositories
 {
     public interface IFileRepository
     {
-        public string GetSystemPath();
-        public Task SaveFile(string folderExtra, string filePath, byte[] data);
-        public string GetFilePath(string fileName);
+        public Task SaveFile(string fullPath, byte[] data);
+        public string GetFullPath(string imagePath);
+        public Task<byte[]> GetFileBytes(string fileName);
     }
 }

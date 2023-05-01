@@ -12,25 +12,32 @@ namespace Domain.Services
             _fileRepository = fileRepository;
         }
 
-        public Task<string> GetImagePath(string fileName)
+        public string GetFileLink(string domain, string resource, string fullFileName) => $"{domain}{resource}/{fullFileName}";
+
+
+        public string GetFullFileName(string fileName)
         {
-            // image path --> full path
             if (string.IsNullOrEmpty(fileName))
-                return Task.FromResult(DISPLAY.DEFAULT_IMAGE);
+                return string.Empty;
 
-            var path = _fileRepository.GetFilePath(fileName);
+            var dateTime = DateTime.Now.ToString("yyyyMMddhhmmss");
+            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+            var extensions = Path.GetExtension(fileName);
 
-            // imagePath, folder, 
-            var fullPath = GetFullPath(path, "Product");
-
-            return Task.FromResult(path);
+            var filePath = fileNameWithoutExtension.Replace(" ", "").Trim() + dateTime + extensions;
+            return filePath;
         }
 
-        public string GetFullPath(string imagePath, string folder)
+        public async Task SaveFileAsync(string fileName, byte[] data)
         {
-            // GET FULL PATH
-            // call repository
-            return fullPath;
+            var path = _fileRepository.GetFullPath(fileName);
+            await this._fileRepository.SaveFile(path, data);
+        }
+
+        public async Task<byte[]> GetFileBytesAsync(string fileName)
+        {
+            var fileBytes = await _fileRepository.GetFileBytes(fileName);
+            return fileBytes;
         }
     }
 }

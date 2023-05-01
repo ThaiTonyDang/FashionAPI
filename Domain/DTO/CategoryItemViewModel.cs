@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -17,9 +16,6 @@ namespace Domain.ViewModels
 
         [Required(ErrorMessage = "DESCRIPTION IS REQUIRED")]
         public string Description { get; set; }
-
-        [Required(ErrorMessage = "IMAGE UPLOAD IS REQUIRED")]
-        public IFormFile Image { get; set; }
 
         public string ImagePath { get; set; }
     }

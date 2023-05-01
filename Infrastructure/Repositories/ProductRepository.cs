@@ -6,10 +6,7 @@ namespace Infrastructure.Repositories
 {
     public class ProductException : Exception
     {
-        public ProductException(string message) : base(message)
-        {
-            
-        }
+        public ProductException(string message) : base(message){}
     }
 
     public class ProductRepository : IProductRepository        
