@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace FashionWeb.Infrastructure.Migrations
+namespace Infrastructure.Migrations
 {
     public partial class RenameProductEnableColumn : Migration
     {

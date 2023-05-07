@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FashionWebAPI.Infrastructure.Models
+namespace Infrastructure.Models
 {
     public class Category
     {
@@ -14,6 +14,9 @@ namespace FashionWebAPI.Infrastructure.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public string ImagePath { get; set; }
+        public bool IsEnabled { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
         public ICollection<Product> Products { get; set; }
     }
 }

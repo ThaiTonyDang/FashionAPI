@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FashionWebAPI.Infrastructure.Models
+namespace Infrastructure.Models
 {
     public class Product
     {
@@ -13,10 +13,11 @@ namespace FashionWebAPI.Infrastructure.Models
         public string Provider { set; get; }
         public decimal Price { set; get; }
         public string Description { get; set; }
-        public int UnitsInStock { get; set; }
+        public int QuantityInStock { get; set; }
         public string ImagePath { get; set; }
-        public bool Enable { get; set; }
-        public string Type { get; set; }
+        public bool IsEnabled { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
         public Guid CategoryId { get; set; }
         public Category Category { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
