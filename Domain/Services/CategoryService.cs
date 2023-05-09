@@ -16,10 +16,10 @@ namespace Domain.Services
             _categoryRepository = categoryRepository;
         }
 
-        public async Task<List<CategoryItemViewModel>> GetListCategoryAsync()
+        public async Task<List<CategoryDto>> GetListCategoryAsync()
         {
             var listCategory = await _categoryRepository.Categories();
-            var listCategoryViewModel = listCategory.Select(category => new CategoryItemViewModel()
+            var listCategoryViewModel = listCategory.Select(category => new CategoryDto()
             {
                 Description = category.Description,
                 CategoryId = category.Id,

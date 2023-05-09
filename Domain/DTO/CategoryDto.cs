@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.ViewModels
 {
-    public class CategoryItemViewModel
+    public class CategoryDto
     {
         public Guid CategoryId { get; set; }
 
