@@ -41,12 +41,13 @@ namespace Infrastructure.Repositories
             return false;
         }
 
-        public Task<List<Product>> GetListProducts()
+        public async Task<List<Product>> GetListProducts()
         {
-            return _appDbContext.Products.ToListAsync();
+            var list = await _appDbContext.Products.ToListAsync();
+            return list;
         }
 
-        public async Task<bool> EditAsync(Product product)
+        public async Task<bool> UpdateAsync(Product product)
         {
             if (product == null)
             {
