@@ -24,7 +24,7 @@ namespace Infrastructure.Repositories
                throw new ProductException("Product can not be null");
             }
 
-            if (product.Id == default(Guid) || product.CategoryId == default(Guid))
+            if (product !=null && product.Id == default(Guid) || product.CategoryId == default(Guid))
                 return false;
 
             var productEntity = _appDbContext.Products
@@ -41,9 +41,10 @@ namespace Infrastructure.Repositories
             return false;
         }
 
-        public Task<List<Product>> GetListProducts()
+        public async Task<List<Product>> GetListProducts()
         {
-            return _appDbContext.Products.ToListAsync();
+            var list = await _appDbContext.Products.ToListAsync();
+            return list;
         }
 
         public async Task<bool> UpdateAsync(Product product)
@@ -66,7 +67,7 @@ namespace Infrastructure.Repositories
                 productEntity.Price = product.Price;
                 productEntity.Description = product.Description;
                 productEntity.CategoryId = product.CategoryId;
-                productEntity.ImagePath = product.ImagePath;
+                productEntity.ImageName = product.ImageName;
                 productEntity.QuantityInStock = product.QuantityInStock;
                 productEntity.IsEnabled = product.IsEnabled;
 

@@ -24,7 +24,7 @@ namespace Domain.Services
                 Description = category.Description,
                 CategoryId = category.Id,
                 Name = category.Name,
-                ImagePath = category.ImagePath,
+                ImageName = category.ImageName,
             }).ToList();
 
             return listCategoryViewModel;

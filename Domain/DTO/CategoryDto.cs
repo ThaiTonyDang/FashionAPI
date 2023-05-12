@@ -17,6 +17,6 @@ namespace Domain.ViewModels
         [Required(ErrorMessage = "DESCRIPTION IS REQUIRED")]
         public string Description { get; set; }
 
-        public string ImagePath { get; set; }
+        public string ImageName { get; set; }
     }
 }

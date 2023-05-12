@@ -16,5 +16,7 @@ namespace Utilities.GlobalHelpers
     public struct HTTTP
     {
         public const string SLUG = "resource";
+        public const string VERSION_V1 = "v1";
+        public const string PRODUCT_ENDPOINTS = "products";
     }
 }

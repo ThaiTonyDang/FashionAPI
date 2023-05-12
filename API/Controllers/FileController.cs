@@ -2,7 +2,6 @@
 using Domain.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Utilities.GlobalHelpers;

@@ -4,10 +4,11 @@ using Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using Utilities.GlobalHelpers;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route($"{HTTTP.VERSION_V1}/")]
     [ApiController]
     public class ProductController : ControllerBase
     {
@@ -17,7 +18,7 @@ namespace API.Controllers
             _productService = productService;
         }
 
-        [HttpPost]
+        [HttpPost($"{HTTTP.PRODUCT_ENDPOINTS}")]
         public async Task<IActionResult> Create(ProductDto product)
         {
             if (product != null)
@@ -27,28 +28,42 @@ namespace API.Controllers
                 if (result)
                     return Ok(new
                     {
+                        Message = "Created !",
+                        StatusCode = 201,
                         Success = true,
-                        Data = product
-                    });
-            }    
-            
-            return BadRequest();
+                    }) ;
+
+                return BadRequest(new
+                {
+                    Message = "Name or Provider already exists or Something Happened",
+                    StatusCode = 400,
+                    Success = false,
+                });
+            }
+
+            return NotFound(new
+            {
+                StatusCode = 404,
+                Success = false,
+                Message = "Product cannot be Empty !"
+            });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetListProducts()
+        [HttpGet($"{HTTTP.PRODUCT_ENDPOINTS}")]
+        public async Task<IActionResult> GetAllProducts()
         {
             var products = await _productService.GetListProductsAsync();
 
             return Ok(new
             {
+                StatusCode = 200,
                 Success = true,
                 Data = products
             });
         }
 
         [HttpPut]
-        [Route("{productId}")]
+        [Route($"{HTTTP.PRODUCT_ENDPOINTS}/{{productId}}")]
         public async Task<IActionResult> UpdateProduct(Product product)
         {
             var productEntity = await _productService.GetProductDtoByIdAsync(product.Id);
@@ -71,7 +86,6 @@ namespace API.Controllers
                     StatusCode = 200,
                     Message = "Update Success",
                     Success = true,
-                    Data = productEntity
                 });
             }
 
@@ -84,12 +98,68 @@ namespace API.Controllers
         }
 
         [HttpDelete]
-        [Route("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        [Route($"{HTTTP.PRODUCT_ENDPOINTS}/{{productId}}")]
+        public async Task<IActionResult> Delete(string productId)
         {
-            var product = await _productService.GetProductDtoByIdAsync(id);
-            if (product == null)
+            if (productId.IsConvertToGuid())
             {
+                var product = await _productService.GetProductDtoByIdAsync(new Guid(productId));
+                if (product == null)
+                {
+                    return NotFound(new
+                    {
+                        StatusCode = 404,
+                        Success = false,
+                        Message = "Product Not Found !"
+                    });
+                }
+
+                var isSuccess = await _productService.DeleteProductAsync(new Guid(productId));
+
+                if (isSuccess)
+                {
+                    return Ok(new
+                    {
+                        StatusCode = 204,
+                        Success = true,
+                        Message = "Deleted !",
+                    });
+                }
+
+                return BadRequest(new
+                {
+                    StatusCode = 400,
+                    Success = false,
+                    Message = "Delete Fail !"
+                });
+            }
+          
+            return BadRequest(new
+            {
+                StatusCode = 400,
+                Success = false,
+                Message = "Id InValid !"
+            });
+        }
+
+        [HttpGet]
+        [Route($"{HTTTP.PRODUCT_ENDPOINTS}/{{productId}}")]
+        public async Task<IActionResult> GetSingleProduct(string productId)
+        {
+            if (productId.IsConvertToGuid())
+            {
+                var product = await _productService.GetProductDtoByIdAsync(new Guid(productId));
+
+                if (product != null)
+                {
+                    return Ok(new
+                    {
+                        StatusCode = 200,
+                        Success = true,
+                        Data = product
+                    });
+                }
+
                 return NotFound(new
                 {
                     StatusCode = 404,
@@ -98,23 +168,11 @@ namespace API.Controllers
                 });
             }
 
-            var isSuccess = await _productService.DeleteProductAsync(id);
-
-            if (isSuccess)
-            {
-                return Ok(new
-                {
-                    Success = true,
-                    Message = "Delete Success!",
-                    Data = product
-                });
-            }
-
             return BadRequest(new
             {
                 StatusCode = 400,
                 Success = false,
-                Message = "Delete Fail !"
+                Message = "Id Invalid !"
             });
         }
     }
