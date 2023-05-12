@@ -9,6 +9,6 @@ namespace Domain.Services
 {
     public interface ICategoryService
     {
-        public Task<List<CategoryItemViewModel>> GetListCategoryAsync();
+        public Task<List<CategoryDto>> GetListCategoryAsync();
     }
 }

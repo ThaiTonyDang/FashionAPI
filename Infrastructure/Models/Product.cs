@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Infrastructure.Models
+﻿namespace Infrastructure.Models
 {
     public class Product
     {
@@ -14,7 +8,7 @@ namespace Infrastructure.Models
         public decimal Price { set; get; }
         public string Description { get; set; }
         public int QuantityInStock { get; set; }
-        public string ImagePath { get; set; }
+        public string ImageName { get; set; }
         public bool IsEnabled { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
