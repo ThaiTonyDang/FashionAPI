@@ -23,7 +23,7 @@ namespace Domain.Services
 				Price = p.Price,
 				Provider = p.Provider,
 				Description = p.Description,
-				ImagePath = p.ImagePath,
+				ImageName = p.ImageName,
 				QuantityInStock = p.QuantityInStock,
 				IsEnabled = p.IsEnabled,
 				CategoryId = p.CategoryId
@@ -32,12 +32,12 @@ namespace Domain.Services
 			return listProducts;
 		}
 
-
 		public async Task<bool> AddProductAsync(ProductDto productDto)
 		{
-			if (productDto == null)
+			if (productDto == null || productDto?.Price == null)
 				return false;
 
+			productDto.Id = Guid.NewGuid();
 			var product = new Product()
 			{
 				Id = productDto.Id,
@@ -46,7 +46,7 @@ namespace Domain.Services
 				Price = productDto.Price,
 				Description = productDto.Description,
 				CategoryId = productDto.CategoryId,
-				ImagePath = productDto.ImagePath,
+				ImageName = productDto.ImageName,
 				QuantityInStock = productDto.QuantityInStock,
 				IsEnabled = productDto.IsEnabled
 			};
@@ -57,12 +57,12 @@ namespace Domain.Services
 
 		public async Task<bool> UpdateProductAsync(ProductDto productDto)
 		{
-			
-			var imagePath = DISPLAY.DEFAULT_IMAGE;
 
-			if (productDto.ImagePath != null)
+			var imagePath = productDto.ImageName;
+
+			if (!string.IsNullOrEmpty(productDto.ImageName))
 			{
-				imagePath = productDto.ImagePath;
+				imagePath = productDto.ImageName;
 			}
 
 			var product = new Product
@@ -75,7 +75,7 @@ namespace Domain.Services
 				Description = productDto.Description,
 				QuantityInStock= productDto.QuantityInStock,
 				IsEnabled = productDto.IsEnabled,
-				ImagePath = imagePath
+				ImageName = imagePath
 			};
 
 			var result = await _productRepository.UpdateAsync(product);        
@@ -101,7 +101,14 @@ namespace Domain.Services
 				var productItem = new ProductDto
 				{
 					Id = product.Id,
+					Name = product.Name,
+					Price = product.Price,
+					Provider = product.Provider,
 					CategoryId = product.CategoryId,
+					Description = product.Description,
+					QuantityInStock = product.QuantityInStock,
+					IsEnabled = product.IsEnabled,
+					ImageName = product.ImageName
 				};
 
 				return productItem;

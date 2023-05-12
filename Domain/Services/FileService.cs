@@ -14,7 +14,6 @@ namespace Domain.Services
 
         public string GetFileLink(string domain, string resource, string fullFileName) => $"{domain}{resource}/{fullFileName}";
 
-
         public string GetFullFileName(string fileName)
         {
             if (string.IsNullOrEmpty(fileName))

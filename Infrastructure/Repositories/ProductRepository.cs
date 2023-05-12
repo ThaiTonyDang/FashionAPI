@@ -67,7 +67,7 @@ namespace Infrastructure.Repositories
                 productEntity.Price = product.Price;
                 productEntity.Description = product.Description;
                 productEntity.CategoryId = product.CategoryId;
-                productEntity.ImagePath = product.ImagePath;
+                productEntity.ImageName = product.ImageName;
                 productEntity.QuantityInStock = product.QuantityInStock;
                 productEntity.IsEnabled = product.IsEnabled;
 
