@@ -23,7 +23,7 @@ namespace Domain.Services
 				Price = p.Price,
 				Provider = p.Provider,
 				Description = p.Description,
-				ImageName = p.ImageName,
+				ImageName = p.ImagePath,
 				QuantityInStock = p.QuantityInStock,
 				IsEnabled = p.IsEnabled,
 				CategoryId = p.CategoryId
@@ -46,7 +46,7 @@ namespace Domain.Services
 				Price = productDto.Price,
 				Description = productDto.Description,
 				CategoryId = productDto.CategoryId,
-				ImageName = productDto.ImageName,
+				ImagePath = productDto.ImageName,
 				QuantityInStock = productDto.QuantityInStock,
 				IsEnabled = productDto.IsEnabled
 			};
@@ -75,7 +75,7 @@ namespace Domain.Services
 				Description = productDto.Description,
 				QuantityInStock= productDto.QuantityInStock,
 				IsEnabled = productDto.IsEnabled,
-				ImageName = imagePath
+				ImagePath = imagePath
 			};
 
 			var result = await _productRepository.UpdateAsync(product);        
@@ -108,7 +108,7 @@ namespace Domain.Services
 					Description = product.Description,
 					QuantityInStock = product.QuantityInStock,
 					IsEnabled = product.IsEnabled,
-					ImageName = product.ImageName
+					ImageName = product.ImagePath
 				};
 
 				return productItem;
