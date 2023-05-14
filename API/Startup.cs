@@ -41,6 +41,8 @@ namespace API
             services.Configure<FileConfig>(Configuration.GetSection("FileConfig"));
             services.AddDbContext<AppDbContext>(x =>
                                                x.UseSqlServer(Configuration.GetConnectionString("FashionWeb")));
+
+            services.AddHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,6 +77,9 @@ namespace API
             {
                 endpoints.MapControllers();
             });
+
+
+            app.UseHealthChecks("/health");
         }
     }
 }
