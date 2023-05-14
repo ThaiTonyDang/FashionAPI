@@ -14,6 +14,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipeline", "pipeline", "{88C10577-E25D-479C-A8A8-390B3CE9D0EE}"
 	ProjectSection(SolutionItems) = preProject
 		bitbucket-pipelines.yml = bitbucket-pipelines.yml
+		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
 Global
