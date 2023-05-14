@@ -2,9 +2,12 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace API.ExceptionMiddleware
@@ -29,16 +32,22 @@ namespace API.ExceptionMiddleware
             catch (Exception exception)
             {
                 var errorDetails = exception.Message;
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                _logger.LogError(errorDetails, exception.StackTrace);
+                await HandleExceptionAsync(context, exception, errorDetails);
+            }           
+        }
 
-                _logger.LogError(errorDetails, exception.StackTrace);                          
-                await context.Response.WriteAsync(new ErrorDetails()
-                {
-                    StatusCode = context.Response.StatusCode,
-                    Messenger = "Internal Server Error! Have A Mistake on Server Side",
-                    ErrorsDetail = errorDetails.Split(new[] { "\r\n" }, StringSplitOptions.None)
-                }.ToString());
-            }          
+        private static async Task HandleExceptionAsync(HttpContext context, Exception exception, string errorDetails)
+        {                   
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+            await context.Response.WriteAsync(new ErrorDetails()
+            {
+                StatusCode = context.Response.StatusCode,
+                Message = "Internal Server Error ! There is an error on the server side",
+                ErrorsDetail = errorDetails.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None)
+            }.ToString()); ;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Domain.DTO
         [Required(ErrorMessage = "Category is required")]
         public Guid CategoryId { get; set; }
 
-        public string ImagePath { get; set; }
+        public string ImageName { get; set; }
         public bool IsEnabled { get; set; }
         public string Description { get; set; }
     }
