@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipeline", "pipeline", "{88
 	ProjectSection(SolutionItems) = preProject
 		bitbucket-pipelines.yml = bitbucket-pipelines.yml
 		Dockerfile = Dockerfile
+		Jenkinsfile = Jenkinsfile
 	EndProjectSection
 EndProject
 Global
@@ -39,10 +40,6 @@ Global
 		{BDC4864F-6E20-4DB5-9D72-F48E03D8D54C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDC4864F-6E20-4DB5-9D72-F48E03D8D54C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDC4864F-6E20-4DB5-9D72-F48E03D8D54C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B888050F-FA0C-47F5-99AB-5D0206C89F5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B888050F-FA0C-47F5-99AB-5D0206C89F5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B888050F-FA0C-47F5-99AB-5D0206C89F5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B888050F-FA0C-47F5-99AB-5D0206C89F5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
