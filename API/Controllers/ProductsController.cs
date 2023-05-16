@@ -22,32 +22,34 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(ProductDto product)
         {
+            var message = "";
             if (product == null)
             {
                 return NotFound(new
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Success = false,
-                    Message = "Product cannot be Empty !"
+                    Message = "Product Cannot Be Empty !"
                 });
-            }    
-         
-            var result = await _productService.AddProductAsync(product);
+            }
 
-            if (result)
-                return Ok(new
-                {
-                    StatusCode = HttpStatusCode.Created,
-                    Success = true,
-                    Message = "Created !",
-                }) ;
+            var result = await _productService.CreateProductAsync(product);
+            var isSuccess = result.Item1;
+            message = result.Item2;
+            if (isSuccess)
+            return Ok(new
+            {
+                StatusCode = HttpStatusCode.Created,
+                Success = true,
+                Message = $"{message}"
+            });
 
             return BadRequest(new
             {
                 StatusCode = HttpStatusCode.BadRequest,
                 Success = false,
-                Message = "Name or Provider already exists or Something Happened",
-            });                       
+                Message = $"{message}",
+            });         
         }
 
         [HttpGet]
@@ -59,8 +61,8 @@ namespace API.Controllers
             {
                 StatusCode = HttpStatusCode.OK,
                 Success = true,
-                Data = products,
                 Message = "Get list success",
+                Data = products,
             });
         }
 
