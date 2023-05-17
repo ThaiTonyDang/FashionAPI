@@ -15,7 +15,7 @@ namespace Domain.Services
 
 		public async Task<List<ProductDto>> GetListProductsAsync()
 		{
-			var products = await _productRepository.GetListProducts();
+			var products = await _productRepository.GetListProductsAsync();
 			var listProducts = products.Select(p => new ProductDto
 			{
 				Id = p.Id,
@@ -23,7 +23,7 @@ namespace Domain.Services
 				Price = p.Price,
 				Provider = p.Provider,
 				Description = p.Description,
-				ImageName = p.ImagePath,
+				ImageName = p.ImageName,
 				QuantityInStock = p.QuantityInStock,
 				IsEnabled = p.IsEnabled,
 				CategoryId = p.CategoryId
@@ -32,12 +32,12 @@ namespace Domain.Services
 			return listProducts;
 		}
 
-		public async Task<bool> AddProductAsync(ProductDto productDto)
+		public async Task<Tuple<bool, string>> CreateProductAsync(ProductDto productDto)
 		{
 			if (productDto == null || productDto?.Price == null)
-				return false;
+				return Tuple.Create(false, "The Product To Be Created Doesn't Exist Or Price Value Is Invalid");
 
-			productDto.Id = Guid.NewGuid();
+            productDto.Id = Guid.NewGuid();
 			var product = new Product()
 			{
 				Id = productDto.Id,
@@ -46,13 +46,13 @@ namespace Domain.Services
 				Price = productDto.Price,
 				Description = productDto.Description,
 				CategoryId = productDto.CategoryId,
-				ImagePath = productDto.ImageName,
+				ImageName = productDto.ImageName,
 				QuantityInStock = productDto.QuantityInStock,
 				IsEnabled = productDto.IsEnabled
 			};
 
-			var isSuccses = await _productRepository.AddAsync(product);
-			return isSuccses;
+			var result = await _productRepository.CreateAsync(product);
+			return result;
 		}
 
 		public async Task<bool> UpdateProductAsync(ProductDto productDto)
@@ -75,7 +75,7 @@ namespace Domain.Services
 				Description = productDto.Description,
 				QuantityInStock= productDto.QuantityInStock,
 				IsEnabled = productDto.IsEnabled,
-				ImagePath = imagePath
+				ImageName = imagePath
 			};
 
 			var result = await _productRepository.UpdateAsync(product);        
@@ -108,7 +108,7 @@ namespace Domain.Services
 					Description = product.Description,
 					QuantityInStock = product.QuantityInStock,
 					IsEnabled = product.IsEnabled,
-					ImageName = product.ImagePath
+					ImageName = product.ImageName
 				};
 
 				return productItem;

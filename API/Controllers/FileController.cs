@@ -2,6 +2,7 @@
 using Domain.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Utilities.GlobalHelpers;
@@ -19,14 +20,15 @@ namespace API.Controllers
         }
 
         [HttpPost("upload")]
-        public async Task<IActionResult> SaveFile([FromForm] IFormFile file)
+        public async Task<IActionResult> SaveFile([FromForm]IFormFile file)
         {
             if(file == null)
             {
                 return BadRequest(new
                 {
                     StatusCode = HttpStatusCode.BadRequest,
-                    Message = "PLease upload file"
+                    Success = false,
+                    Message = "Please Upload File"
                 });
             }
 
@@ -36,15 +38,14 @@ namespace API.Controllers
             var data = await file.GetBytes();
             await this._fileService.SaveFileAsync(fullFileName, data);
             var link = this._fileService.GetFileLink(baseUrl, HTTTP.SLUG, fullFileName);
-            
+            var dataList = new List<string> { fullFileName, link } ;
             return Ok(new
             {
-                StatusCode = 200,
-                Message = "Created Image successfully",
-                IsSucces = true,
-                fileName = fullFileName,
-                Link = link
-            });;
+                StatusCode = HttpStatusCode.Created,
+                Success = true,
+                Message = "Created Image Success !",
+                Data = dataList
+            });
         }
 
         [HttpGet($"/{HTTTP.SLUG}/{{fileName}}")]
@@ -54,18 +55,18 @@ namespace API.Controllers
             {
                 return BadRequest(new
                 {
-                    StatusCode = 400,
-                    Message = "Image not found"
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "File's Name Cannot Be Empty !"
                 });
             }
 
             var imageBytes = await _fileService.GetFileBytesAsync(fileName);
             if (imageBytes == default(byte[]))
             {
-                return BadRequest(new
+                return NotFound(new
                 {
-                    StatusCode = 400,
-                    Message = "Image not found"
+                    StatusCode = HttpStatusCode.NotFound,
+                    Message = "Image Not Found !"
                 });
             }
 
