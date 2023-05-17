@@ -17,31 +17,38 @@ namespace Infrastructure.Repositories
             _appDbContext = appDbContext;
         }
 
-        public async Task<bool> AddAsync(Product product)
+        public async Task<Tuple<bool, string>> CreateAsync(Product product)
         {
-            if(product == null)
+            try
             {
-               throw new ProductException("Product can not be null");
-            }
+                if (product == null)
+                {
+                    throw new ProductException("Product can not be null");              
+                }
 
-            if (product.Id == default(Guid) || product.CategoryId == default(Guid))
-                return false;
+                if (product.Id == default(Guid) || product.CategoryId == default(Guid))
+                   return Tuple.Create(false, "Product Can Not Be Null");
 
-            var productEntity = _appDbContext.Products
-                                             .Where(p => p.Name == product.Name && p.Provider == product.Provider)
-                                             .FirstOrDefault();
-
-            if (productEntity == null)
-            {
+                var productEntity = _appDbContext.Products
+                                                 .Where(p => p.Name == product.Name && p.Provider == product.Provider)
+                                                 .FirstOrDefault();
+                if (productEntity != null)
+                {
+                    return Tuple.Create(false, "Product Name And Product Brand Already Exist");
+                }
+                
                 await _appDbContext.AddAsync(product);
                 var result = await _appDbContext.SaveChangesAsync();
-                return (result > 0);
-            }
+                return Tuple.Create(result > 0, "Created Product Success !");
 
-            return false;
+            }
+            catch (Exception exception)
+            {
+                return Tuple.Create(false, $"An Error Occurred : {exception.Message}");
+            }                 
         }
 
-        public async Task<List<Product>> GetListProducts()
+        public async Task<List<Product>> GetListProductsAsync()
         {
             var list = await _appDbContext.Products.ToListAsync();
             return list;
@@ -67,7 +74,7 @@ namespace Infrastructure.Repositories
                 productEntity.Price = product.Price;
                 productEntity.Description = product.Description;
                 productEntity.CategoryId = product.CategoryId;
-                productEntity.ImagePath = product.ImagePath;
+                productEntity.ImageName = product.ImageName;
                 productEntity.QuantityInStock = product.QuantityInStock;
                 productEntity.IsEnabled = product.IsEnabled;
 
