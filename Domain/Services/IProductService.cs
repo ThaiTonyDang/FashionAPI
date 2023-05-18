@@ -6,8 +6,8 @@ namespace Domain.Services
     {
         public Task<Tuple<bool, string>> CreateProductAsync(ProductDto product);
         public Task<List<ProductDto>> GetListProductsAsync();
-        public Task<bool> UpdateProductAsync(ProductDto productDto);
-        public Task<bool> DeleteProductAsync(Guid id);
-        public Task<ProductDto> GetProductDtoByIdAsync(Guid id);
+        public Task<Tuple<bool, string>> UpdateProductAsync(ProductDto productDto);
+        public Task<Tuple<bool, string>> DeleteProductAsync(Guid id);
+        public Task<Tuple<ProductDto, string>> GetProductDtoByIdAsync(Guid id);
     }
 }
