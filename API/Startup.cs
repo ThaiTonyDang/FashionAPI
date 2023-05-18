@@ -1,10 +1,13 @@
 using API.ExceptionMiddleware;
+using API.Extensions;
 using Domain.Services;
 using Infrastructure.Config;
 using Infrastructure.DataContext;
+using Infrastructure.Models;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +35,10 @@ namespace API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
             });
+
+            services.AddDbContext<AppDbContext>(x =>
+                                   x.UseSqlServer(Configuration.GetConnectionString("FashionWeb")));
+
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
@@ -39,9 +46,9 @@ namespace API
             services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<IFileService, FileService>();
 
+            services.AddIdentityServices();
+
             services.Configure<FileConfig>(Configuration.GetSection("FileConfig"));
-            services.AddDbContext<AppDbContext>(x =>
-                                               x.UseSqlServer(Configuration.GetConnectionString("FashionWeb")));
 
             services.AddHealthChecks();
         }
