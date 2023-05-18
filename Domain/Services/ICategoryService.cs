@@ -1,4 +1,5 @@
-﻿using Domain.ViewModels;
+﻿using Domain.DTO;
+using Infrastructure.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,9 @@ namespace Domain.Services
     public interface ICategoryService
     {
         public Task<List<CategoryDto>> GetListCategoryAsync();
+        public Task<Tuple<bool, string>> CreateCategoryAsync(CategoryDto categoryDto);
+        public Task<Tuple<bool, string>> UpdateCategoryAsync(CategoryDto categoryDto);
+        public Task<Tuple<bool, string>> DeleteCategoryAsync(Guid id);
+        public Task<Tuple<CategoryDto, string>> GetCategoryById(Guid id);
     }
 }
