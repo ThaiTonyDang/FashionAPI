@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.ViewModels
+namespace Domain.DTO
 {
     public class CategoryDto
     {
-        public Guid CategoryId { get; set; }
+        public Guid Id { get; set; }
 
         [Required(ErrorMessage = "CATEGORY NAME IS REQUIRED")]
         public string Name { get; set; }

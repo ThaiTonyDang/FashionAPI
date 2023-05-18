@@ -9,6 +9,10 @@ namespace Infrastructure.Repositories
 {
     public interface ICategoryRepository
     {
-        public Task<List<Category>> Categories();
+        public Task<List<Category>> GetListCategoryAsync();
+        public Task<Tuple<bool, string>> CreateAsync(Category category);
+        public Task<Tuple<bool, string>> UpdateAsync(Category category);
+        public Task<Tuple<bool, string>> DeleteAsync(Guid id);
+        public Task<Tuple<Category, string>> GetCategoryById(Guid id);
     }
 }
