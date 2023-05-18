@@ -68,36 +68,25 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("{productId}")]
-        public async Task<IActionResult> Update(Product product)
+        public async Task<IActionResult> Update(ProductDto productDto)
         {
-            var productEntity = await _productService.GetProductDtoByIdAsync(product.Id);
-            if (productEntity == null)
-            {
-                return NotFound(new
-                {
-                    StatusCode = HttpStatusCode.NotFound,
-                    Success = false,
-                    Message = "Product not found"
-                });
-            }
-
-            var isSuccess = await _productService.UpdateProductAsync(productEntity);
-
+            var result = await _productService.UpdateProductAsync(productDto);
+            var isSuccess = result.Item1;
+            var message = result.Item2;
             if (isSuccess)
             {
                 return Ok(new
                 {
                     StatusCode = HttpStatusCode.OK,
                     Success = true,
-                    Message = "Update Success",                    
+                    Message = $"{message}",                    
                 });
             }
-
             return BadRequest(new
             {
                 StatusCode = HttpStatusCode.BadRequest,
                 Success = false,
-                Message = "Update Fail !"
+                Message = $"{message}"
             });
         }
 
@@ -111,38 +100,26 @@ namespace API.Controllers
                 {
                     StatusCode = HttpStatusCode.BadRequest,
                     Success = false,
-                    Message = "Id InValid !"
+                    Message = "Product Id Is InValid ! Delete Failed !"
                 });
             }    
-
-            var product = await _productService.GetProductDtoByIdAsync(new Guid(productId));
-            if (product == null)
-            {
-                return NotFound(new
-                {
-                    StatusCode = HttpStatusCode.NotFound,
-                    Success = false,
-                    Message = "Product Not Found !"
-                });
-            }
-
-            var isSuccess = await _productService.DeleteProductAsync(new Guid(productId));
-
+            var result = await _productService.DeleteProductAsync(new Guid(productId));
+            var isSuccess = result.Item1;
+            var message = result.Item2;
             if (isSuccess)
             {
                 return Ok(new
                 {
                     StatusCode = HttpStatusCode.NoContent,
                     Success = true,
-                    Message = "Deleted !",
+                    Message = $"{message}",
                 });
             }
-
             return BadRequest(new
             {
                 StatusCode = HttpStatusCode.BadRequest,
                 Success = false,
-                Message = "Delete Fail !"
+                Message = $"{message}"
             });                            
         }
 
@@ -156,28 +133,29 @@ namespace API.Controllers
                 {
                     StatusCode = HttpStatusCode.BadRequest,
                     Success = false,
-                    Message = "Id InValid !"
+                    Message = "Product Id Is InValid ! Delete Failed !"
                 });
             }
-
-            var product = await _productService.GetProductDtoByIdAsync(new Guid(productId));
-
-            if (product != null)
+            var result = await _productService.GetProductDtoByIdAsync(new Guid(productId));
+            var productDto = result.Item1;
+            var message = result.Item2;
+            if (productDto != null)
             {
                 return Ok(new
                 {
-                    StatusCode = HttpStatusCode.OK,
+                    StatusCode = HttpStatusCode.NoContent,
                     Success = true,
-                    Data = product
+                    Message = $"{message}",
+                    Data = productDto
                 });
             }
-
-            return NotFound(new
+            return BadRequest(new
             {
-                StatusCode = HttpStatusCode.NotFound,
+                StatusCode = HttpStatusCode.BadRequest,
                 Success = false,
-                Message = "Product Not Found !"
+                Message = $"{message}"
             });
-        }    
+
+        }
     }
 }

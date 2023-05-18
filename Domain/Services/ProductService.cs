@@ -1,4 +1,5 @@
 ﻿using Domain.DTO;
+using Domain.ViewModels;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
 using Utilities.GlobalHelpers;
@@ -55,16 +56,13 @@ namespace Domain.Services
 			return result;
 		}
 
-		public async Task<bool> UpdateProductAsync(ProductDto productDto)
+		public async Task<Tuple<bool, string>> UpdateProductAsync(ProductDto productDto)
 		{
-
 			var imagePath = productDto.ImageName;
-
 			if (!string.IsNullOrEmpty(productDto.ImageName))
 			{
 				imagePath = productDto.ImageName;
 			}
-
 			var product = new Product
 			{
 				Id = productDto.Id,
@@ -78,43 +76,55 @@ namespace Domain.Services
 				ImageName = imagePath
 			};
 
-			var result = await _productRepository.UpdateAsync(product);        
-			return result;
+			var result = await _productRepository.UpdateAsync(product);
+            var isSuccess = result.Item1;
+            var message = result.Item2;
+
+            return Tuple.Create(isSuccess, message);
 		}
 
-		public async Task<bool> DeleteProductAsync(Guid id)
+		public async Task<Tuple<bool, string>> DeleteProductAsync(Guid id)
 		{
-			if (id != default(Guid))
-			{
-				var result = await _productRepository.DeleteAsync(id);
-				return result;
-			}
+            if (id == default)
+            {
+                return Tuple.Create(false, "Id Invalid ! Delete Fail!");
+            }
+            var result = await _productRepository.DeleteAsync(id);
+            var isSuccess = result.Item1;
+            var message = result.Item2;
 
-			return false;
-		}
+            return Tuple.Create(isSuccess, message);
+        }
 
-		public async Task<ProductDto> GetProductDtoByIdAsync(Guid id)
+        public async Task<Tuple<ProductDto, string>> GetProductDtoByIdAsync(Guid id)
 		{
-			var product = await _productRepository.GetProductByIdAsync(id);
-			if (product != null)
+            if (id == default)
+            {
+                return Tuple.Create(default(ProductDto), "Id Invalid ! Cannot Get Prodcut !");
+            }
+
+            var result = await _productRepository.GetProductByIdAsync(id);
+            var product = result.Item1;
+            var message = result.Item2;
+            if (product == null)
+			{ 
+                return Tuple.Create(default(ProductDto), $"{message}");
+            }
+			var productDto = new ProductDto
 			{
-				var productItem = new ProductDto
-				{
-					Id = product.Id,
-					Name = product.Name,
-					Price = product.Price,
-					Provider = product.Provider,
-					CategoryId = product.CategoryId,
-					Description = product.Description,
-					QuantityInStock = product.QuantityInStock,
-					IsEnabled = product.IsEnabled,
-					ImageName = product.ImageName
-				};
+				Id = product.Id,
+				Name = product.Name,
+				Price = product.Price,
+				Provider = product.Provider,
+				CategoryId = product.CategoryId,
+				Description = product.Description,
+				QuantityInStock = product.QuantityInStock,
+				IsEnabled = product.IsEnabled,
+				ImageName = product.ImageName
+			};
 
-				return productItem;
-			}
+		    return Tuple.Create(productDto, message);
 
-			return null;
-		}
-	}
+        }
+    }
 }
