@@ -63,7 +63,6 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        [Route("{categoryId}")]
         public async Task<IActionResult> Update(CategoryDto categoryDto)
         {
             var result = await _categotyService.UpdateCategoryAsync(categoryDto);
