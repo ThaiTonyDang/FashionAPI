@@ -1,9 +1,6 @@
 ﻿using Domain.Dtos;
 using Domain.Services;
-using Infrastructure.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -49,7 +46,7 @@ namespace API.Controllers
             return StatusCode((int)HttpStatusCode.Created);
         }
 
-        [HttpPost]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserDto user)
         {
             if (user == null)
@@ -67,7 +64,12 @@ namespace API.Controllers
                 return BadRequest("Password can not be null or empty");
             }
 
-            return Ok();
+            var isValidated = await this._userService.ValidateUserAsync(user);
+            if(!isValidated)
+                return Unauthorized("Username or Password are not correct");
+
+            var token = await this._userService.CreateTokenAsync(user);
+            return Ok(token);
         }
     }
 }

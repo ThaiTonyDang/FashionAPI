@@ -2,9 +2,7 @@
 using Infrastructure.Config;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -45,7 +43,8 @@ namespace Domain.Services
             var signingCredentials = GetSigningCredentials();
             var claims = await GetClaims(user.Email);
             var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
-            return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            return token;
         }
 
         public async Task<bool> ValidateUserAsync(UserDto userLogin)
@@ -70,10 +69,10 @@ namespace Domain.Services
             var user = await _userRepository.GetUserByEmail(email);
             var claims = new List<Claim>
             {
-                new Claim("FirstName", user.FirstName),
-                new Claim("LastName", user.LastName),
-                new Claim(ClaimTypes.Email, user.UserName),
-                new Claim(ClaimTypes.Email, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("firstName", user.FirstName),
+                new Claim("lastName", user.LastName),
             };
 
             var roles = await this._userRepository.GetListRoles(user);
@@ -85,7 +84,8 @@ namespace Domain.Services
             return claims;
         }
 
-        private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
+        private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials,
+            List<Claim> claims)
         {
             var tokenOptions = new JwtSecurityToken(
                 _tokenConfig.Issuer,
