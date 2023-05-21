@@ -16,7 +16,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "FashionAPI.Web": {
+    "FashionApi": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,

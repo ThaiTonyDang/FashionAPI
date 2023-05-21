@@ -30,6 +30,11 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting(options =>
+            {
+                options.LowercaseUrls = true;
+            });
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -45,8 +50,11 @@ namespace API
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddIdentityServices();
+            services.AddIdentityTokenConfig(Configuration);
 
             services.Configure<FileConfig>(Configuration.GetSection("FileConfig"));
 
