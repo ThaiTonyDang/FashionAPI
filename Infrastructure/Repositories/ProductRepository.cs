@@ -37,7 +37,7 @@ namespace Infrastructure.Repositories
                     return Tuple.Create(false, "Product Name And Product Brand Already Exist");
                 }
                 
-                await _appDbContext.AddAsync(product);
+                await _appDbContext.Products.AddAsync(product);
                 var result = await _appDbContext.SaveChangesAsync();
                 return Tuple.Create(result > 0, "Created Product Success !");
 
@@ -78,7 +78,7 @@ namespace Infrastructure.Repositories
                 productEntity.QuantityInStock = product.QuantityInStock;
                 productEntity.IsEnabled = product.IsEnabled;
 
-                _appDbContext.Update(productEntity);
+                _appDbContext.Products.Update(productEntity);
                 var result = _appDbContext.SaveChanges();
                 return (result > 0);
             }

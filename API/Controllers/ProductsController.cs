@@ -67,21 +67,9 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        [Route("{productId}")]
-        public async Task<IActionResult> Update(Product product)
+        public async Task<IActionResult> Update(ProductDto productDto)
         {
-            var productEntity = await _productService.GetProductDtoByIdAsync(product.Id);
-            if (productEntity == null)
-            {
-                return NotFound(new
-                {
-                    StatusCode = HttpStatusCode.NotFound,
-                    Success = false,
-                    Message = "Product not found"
-                });
-            }
-
-            var isSuccess = await _productService.UpdateProductAsync(productEntity);
+            var isSuccess = await _productService.UpdateProductAsync(productDto);
 
             if (isSuccess)
             {

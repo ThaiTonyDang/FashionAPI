@@ -37,7 +37,7 @@ namespace Domain.Services
 			if (productDto == null || productDto?.Price == null)
 				return Tuple.Create(false, "The Product To Be Created Doesn't Exist Or Price Value Is Invalid");
 
-            productDto.Id = Guid.NewGuid();
+			productDto.Id = Guid.NewGuid();
 			var product = new Product()
 			{
 				Id = productDto.Id,
