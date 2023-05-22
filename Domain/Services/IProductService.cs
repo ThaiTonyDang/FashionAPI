@@ -1,4 +1,4 @@
-﻿using Domain.DTO;
+﻿using Domain.Dtos;
 
 namespace Domain.Services
 {

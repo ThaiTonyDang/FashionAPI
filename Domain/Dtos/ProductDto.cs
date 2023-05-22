@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Utilities.GlobalHelpers;
 
-namespace Domain.DTO
+namespace Domain.Dtos
 {
     public class ProductDto
     {

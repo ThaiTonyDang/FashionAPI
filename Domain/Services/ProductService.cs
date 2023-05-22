@@ -1,11 +1,10 @@
-﻿using Domain.DTO;
+﻿using Domain.Dtos;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
-using Utilities.GlobalHelpers;
 
 namespace Domain.Services
 {
-	public class ProductService : IProductService
+    public class ProductService : IProductService
 	{
 		private readonly IProductRepository _productRepository;
 		public ProductService(IProductRepository productRepository)

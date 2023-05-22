@@ -1,4 +1,5 @@
 using API.ExceptionMiddleware;
+using API.Extensions;
 using Domain.Services;
 using Infrastructure.Config;
 using Infrastructure.DataContext;
@@ -27,21 +28,37 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting(options =>
+            {
+                options.LowercaseUrls = true;
+            });
+
             services.AddControllers();
+                //.AddNewtonsoftJson(options =>
+                //      options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                //   );
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
             });
+
+            services.AddDbContext<AppDbContext>(x =>
+                                   x.UseSqlServer(Configuration.GetConnectionString("FashionWeb")));
+
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
+
+            services.AddIdentityServices();
+            services.AddIdentityTokenConfig(Configuration);
 
             services.Configure<FileConfig>(Configuration.GetSection("FileConfig"));
-            services.AddDbContext<AppDbContext>(x =>
-                                               x.UseSqlServer(Configuration.GetConnectionString("FashionWeb")));
 
             services.AddHealthChecks();
         }
@@ -56,7 +73,7 @@ namespace API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FashionAPI.Web v1"));
             }
 
-            app.UseMiddleware<ExceptionHandleMiddleware>();
+            //app.UseMiddleware<ExceptionHandleMiddleware>();
 
             var fileConfig = Configuration.GetSection("FileConfig");
             if (fileConfig.Get<FileConfig>() != null)
@@ -70,6 +87,7 @@ namespace API
 
             app.UseRouting();
 
+            app.UseAuthentication(); 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

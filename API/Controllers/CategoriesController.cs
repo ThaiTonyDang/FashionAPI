@@ -1,6 +1,5 @@
-﻿using Domain.DTO;
+﻿using Domain.Dtos;
 using Domain.Services;
-using Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Net;
