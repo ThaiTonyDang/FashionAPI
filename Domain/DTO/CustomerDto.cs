@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Infrastructure.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Models
+namespace Domain.DTO
 {
-    public class Customer
+    public class CustomerDto
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
@@ -16,6 +17,5 @@ namespace Infrastructure.Models
         public string Ward { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
-        public ICollection<Order> Orders { get; set; }
     }
 }
