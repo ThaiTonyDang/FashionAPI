@@ -42,11 +42,11 @@ namespace API.ExceptionMiddleware
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            await context.Response.WriteAsync(new ErrorDetails()
+            await context.Response.WriteAsync(new Error()
             {
                 StatusCode = context.Response.StatusCode,
                 Message = "Internal Server Error ! There is an error on the server side",
-                ErrorsDetail = errorDetails.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None)
+                Errors = errorDetails.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None)
             }.ToString()); ;
         }
     }

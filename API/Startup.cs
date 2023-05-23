@@ -13,6 +13,8 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System.IO;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace API
 {
@@ -33,10 +35,11 @@ namespace API
                 options.LowercaseUrls = true;
             });
 
-            services.AddControllers();
-                //.AddNewtonsoftJson(options =>
-                //      options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-                //   );
+            services.AddControllers().AddJsonOptions(opts =>
+            {
+                opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
 
             services.AddSwaggerGen(c =>
             {
