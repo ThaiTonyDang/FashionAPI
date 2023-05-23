@@ -10,9 +10,9 @@ namespace API
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build()
-                .MigrateDbContext<AppDbContext>( (_, _) =>
+                .MigrateDbContext<AppDbContext>(async (context, servicesProvider) =>
                 {
-                    // No Seeding
+                    await SeedData.InitializeUserAndRole(context, servicesProvider);
                 })
                 .Run();
         }
