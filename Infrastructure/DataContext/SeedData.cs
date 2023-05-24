@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
 
 namespace Infrastructure.DataContext
 {
@@ -48,7 +49,7 @@ namespace Infrastructure.DataContext
                 }
 
                 var isUserRoleExisted = await roleMgr.RoleExistsAsync("User");
-                if (!isAdminRoleExisted)
+                if (!isUserRoleExisted)
                 {
                     await roleMgr.CreateAsync(new Role("User"));
                 }
@@ -60,10 +61,10 @@ namespace Infrastructure.DataContext
                 {
                     var user = new User
                     {
-                        Email = "admin@gmail.com",
-                        UserName = "admin@gmail.com",
-                        FirstName = "admin",
-                        LastName = "admin",
+                        Email = "user@gmail.com",
+                        UserName = "user@gmail.com",
+                        FirstName = "user",
+                        LastName = "user",
                     };
 
                     var result = await userMgr.CreateAsync(user, "abcd@1234");
@@ -71,10 +72,13 @@ namespace Infrastructure.DataContext
                         defaultUser = user;
                 }
 
-                var isUserRole = await userMgr.IsInRoleAsync(defaultUser, "User");
-                if (!isUserRole)
+                if(defaultUser != null)
                 {
-                    await userMgr.AddToRoleAsync(defaultUser, "User");
+                    var isUserRole = await userMgr.IsInRoleAsync(defaultUser, "User");
+                    if (!isUserRole)
+                    {
+                        await userMgr.AddToRoleAsync(defaultUser, "User");
+                    }
                 }
             }
         }
