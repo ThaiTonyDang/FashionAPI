@@ -8,29 +8,26 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class CustomerException : Exception
-    {
-        public CustomerException(string message) : base(message) { }
-    }
-    public class CustomerRepository : ICustomerRepository
+    public class OrderDetailRepository : IOrderDetailRepository
     {
         private readonly AppDbContext _appDbContext;
-        public CustomerRepository(AppDbContext appDbContext)
+        public OrderDetailRepository(AppDbContext appDbContext)
         {
             _appDbContext = appDbContext;
         }
-        public async Task<Tuple<bool, string>> CreateCustomerAsync(Customer customer)
+
+        public async Task<Tuple<bool, string>> CreateOrderDetail(OrderDetail orderDetail)
         {
             try
             {
-                if (customer == null)
+                if (orderDetail == null)
                 {
-                    throw new CustomerException("Customer can not be null");
+                    throw new OrderException("Order detail can not be null");
                 }
 
-                await _appDbContext.Customers.AddAsync(customer);
+                await _appDbContext.OrderDetails.AddAsync(orderDetail);
                 var result = await _appDbContext.SaveChangesAsync();
-                return Tuple.Create(result > 0, "Created Customer Success !");
+                return Tuple.Create(result > 0, "Created Order Detail Success !");
 
             }
             catch (Exception exception)

@@ -27,14 +27,14 @@ namespace Infrastructure.Repositories
                 }
 
                 if (product.Id == default(Guid) || product.CategoryId == default(Guid))
-                   return Tuple.Create(false, "Product Can Not Be Null");
+                   return Tuple.Create(false, "Product And Category Id Is Invalid");
 
                 var productEntity = _appDbContext.Products
                                                  .Where(p => p.Name == product.Name && p.Provider == product.Provider)
                                                  .FirstOrDefault();
                 if (productEntity != null)
                 {
-                    return Tuple.Create(false, "Product Name And Product Brand Already Exist");
+                    return Tuple.Create(false, "Product Name And Product Provider Already Exist");
                 }
                 
                 await _appDbContext.Products.AddAsync(product);
