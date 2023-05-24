@@ -28,7 +28,7 @@ namespace Infrastructure.Repositories
                 }
 
                 if (product.Id == default(Guid) || product.CategoryId == default(Guid))
-                   return Tuple.Create(false, "Product ID Is Invalidl");
+                   return Tuple.Create(false, "Product And Category Id Is Invalid");
 
                 var productEntity = _appDbContext.Products
                                                  .Where(p => p.Name == product.Name && p.Provider == product.Provider)
