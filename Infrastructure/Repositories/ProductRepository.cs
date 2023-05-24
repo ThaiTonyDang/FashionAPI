@@ -88,7 +88,7 @@ namespace Infrastructure.Repositories
                 productEntity.QuantityInStock = product.QuantityInStock;
                 productEntity.IsEnabled = product.IsEnabled;
 
-                _appDbContext.Update(productEntity);
+                _appDbContext.Products.Update(productEntity);
                 var result = _appDbContext.SaveChanges();
                 return Tuple.Create(result > 0, "Updated Product Success !");                         
             }
