@@ -4,17 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Models
+namespace Domain.DTO
 {
-    public class Order
+    public class OrderDto
     {
         public Guid Id { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime RequiredDate { get; set; }
         public string ShipAddress { get; set; }
         public string Status { get; set; }
-        public ICollection<OrderDetail> OrderDetails { get; set; }
         public Guid CustomerId { get; set; }
-        public Customer Customer { get; set; }
     }
 }

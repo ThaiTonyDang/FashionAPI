@@ -67,7 +67,6 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        [Route("{productId}")]
         public async Task<IActionResult> Update(ProductDto productDto)
         {
             var result = await _productService.UpdateProductAsync(productDto);

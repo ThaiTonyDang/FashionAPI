@@ -28,7 +28,7 @@ namespace Infrastructure.Repositories
                 }
 
                 if (product.Id == default(Guid) || product.CategoryId == default(Guid))
-                   return Tuple.Create(false, "Product ID Is Invalidl");
+                   return Tuple.Create(false, "Product And Category Id Is Invalid");
 
                 var productEntity = _appDbContext.Products
                                                  .Where(p => p.Name == product.Name && p.Provider == product.Provider)
@@ -38,7 +38,7 @@ namespace Infrastructure.Repositories
                     return Tuple.Create(false, "Product Name And Product Provider Already Exist");
                 }
                 
-                await _appDbContext.AddAsync(product);
+                await _appDbContext.Products.AddAsync(product);
                 var result = await _appDbContext.SaveChangesAsync();
                 return Tuple.Create(result > 0, "Created Product Success !");
 
@@ -88,7 +88,7 @@ namespace Infrastructure.Repositories
                 productEntity.QuantityInStock = product.QuantityInStock;
                 productEntity.IsEnabled = product.IsEnabled;
 
-                _appDbContext.Update(productEntity);
+                _appDbContext.Products.Update(productEntity);
                 var result = _appDbContext.SaveChanges();
                 return Tuple.Create(result > 0, "Updated Product Success !");                         
             }
