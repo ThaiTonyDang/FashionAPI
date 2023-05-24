@@ -38,7 +38,7 @@ namespace Infrastructure.Repositories
                     return Tuple.Create(false, "Product Name And Product Provider Already Exist");
                 }
                 
-                await _appDbContext.AddAsync(product);
+                await _appDbContext.Products.AddAsync(product);
                 var result = await _appDbContext.SaveChangesAsync();
                 return Tuple.Create(result > 0, "Created Product Success !");
 
