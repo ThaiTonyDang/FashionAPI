@@ -31,7 +31,7 @@ namespace Infrastructure.Repositories
                 if (order.CustomerId == default(Guid))
                     return Tuple.Create(false, "Customer Id Can Not Be Null");
 
-                await _appDbContext.AddAsync(order);
+                await _appDbContext.Orders.AddAsync(order);
                 var result = await _appDbContext.SaveChangesAsync();
                 return Tuple.Create(result > 0, "Created Order Success !");
 

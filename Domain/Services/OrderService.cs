@@ -28,6 +28,8 @@ namespace Domain.Services
                 RequiredDate = orderDto.RequiredDate,
                 ShipAddress = orderDto.ShipAddress,
                 Status = orderDto.Status,
+                IsPaid = orderDto.IsPaid,
+                TotalPrice = orderDto.TotalPrice,
                 CustomerId = orderDto.CustomerId
             };
 
