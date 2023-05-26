@@ -54,6 +54,7 @@ namespace API
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+            services.AddScoped<IOrderInformationRepository, OrderInfoemationRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IOrderService, OrderService>();
@@ -62,6 +63,7 @@ namespace API
             services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IOrderInformationService, OrderInformationService>();
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddIdentityServices();
