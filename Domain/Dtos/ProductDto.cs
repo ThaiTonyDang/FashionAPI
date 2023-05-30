@@ -26,5 +26,6 @@ namespace Domain.Dtos
         public string ImageName { get; set; }
         public bool IsEnabled { get; set; }
         public string Description { get; set; }
+        public int QuantityInOrder { get; set; }
     }
 }

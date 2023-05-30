@@ -1,4 +1,3 @@
-using API.ExceptionMiddleware;
 using API.Extensions;
 using Domain.Services;
 using Infrastructure.Config;
@@ -15,6 +14,8 @@ using Microsoft.OpenApi.Models;
 using System.IO;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using Infrastructure.AggregateRepository;
+using Domain.AggregateService;
 
 namespace API
 {
@@ -54,7 +55,7 @@ namespace API
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
-            services.AddScoped<IOrderInformationRepository, OrderInfoemationRepository>();
+            services.AddScoped<IOrderInformationRepository, OrderInformationRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IOrderService, OrderService>();
