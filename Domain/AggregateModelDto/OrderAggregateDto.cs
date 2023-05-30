@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.JoinItem
+namespace Domain.AggregateModelDto
 {
-    public class OrderInformation : BaseInformation
+    public class OrderAggregateDto :BaseInformationDto
     {
         public int OrderProductsQuantity { get; set; }
-        public bool IsPaid { get; set; }
+        public double Discount { get; set; }
     }
 }

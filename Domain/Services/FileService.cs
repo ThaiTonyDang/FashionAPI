@@ -1,5 +1,4 @@
 ﻿using Infrastructure.Repositories;
-using Utilities.GlobalHelpers;
 
 namespace Domain.Services
 {
