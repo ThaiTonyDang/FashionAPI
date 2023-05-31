@@ -2,9 +2,8 @@
 
 namespace Domain.AggregateModelDto
 {
-    public class OrderInformationDetailDto
+    public class OrderDetailAggregateDto : BaseInformationDto
     {
-        public BaseInformationDto BaseInformationDto { get; set; }
         public ProductDto ProductDto { get; set; }
     }
 }

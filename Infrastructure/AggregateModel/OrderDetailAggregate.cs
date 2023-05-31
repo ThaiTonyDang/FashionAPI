@@ -2,10 +2,10 @@
 
 namespace Infrastructure.AggregateModel
 {
-    public class OrderAggregateDetailInformation 
+    public class OrderDetailAggregate 
     {
        public BaseInformation BaseInformation { get; set; }
        public Product Product { get; set; }
-       public int Quantity { get; set; }
+       public int QuantityInOrder { get; set; }
     }
 }

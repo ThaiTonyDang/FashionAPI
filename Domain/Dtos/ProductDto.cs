@@ -27,5 +27,7 @@ namespace Domain.Dtos
         public bool IsEnabled { get; set; }
         public string Description { get; set; }
         public int QuantityInOrder { get; set; }
+        public DateTime CreateDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
     }
 }

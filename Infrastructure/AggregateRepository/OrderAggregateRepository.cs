@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.AggregateRepository
 {
-    public class OrderInformationRepository : IOrderInformationRepository
+    public class OrderAggregateRepository : IOrderAggregateRepository
     {
         private readonly AppDbContext _appDbContext;
-        public OrderInformationRepository(AppDbContext appDbContext)
+        public OrderAggregateRepository(AppDbContext appDbContext)
         {
             _appDbContext = appDbContext;
         }
-        public async Task<List<OrderAggregateInformation>> GetListOrderAsync()
+        public async Task<List<OrderAggregate>> GetListOrderAsync()
         {
             var orderDetails = await _appDbContext.OrderDetails.ToListAsync();
             var orderBaseInformation = await GetBasicInformation();
@@ -28,6 +28,7 @@ namespace Infrastructure.AggregateRepository
                                  o.TotalPrice,
                                  o.ShipAddress,
                                  ods.Discount,
+                                 o.IsPaid
                              } into gr
                              let baseInformation = new BaseInformation
                              {
@@ -38,8 +39,9 @@ namespace Infrastructure.AggregateRepository
                                  OrderDate = gr.Key.OrderDate,
                                  TotalPrice = gr.Key.TotalPrice,
                                  ShipAddress = gr.Key.ShipAddress,
+                                 IsPaid = gr.Key.IsPaid,
                              }
-                             select new OrderAggregateInformation
+                             select new OrderAggregate
                              {
                                  BaseInformation = baseInformation,
                                  Discount = gr.Key.Discount,
@@ -47,7 +49,7 @@ namespace Infrastructure.AggregateRepository
                              }).ToList(); return orderList;
         }
 
-        public async Task<List<OrderAggregateDetailInformation>> GetListOrderDetailAsync()
+        public async Task<List<OrderDetailAggregate>> GetListOrderDetailAsync()
         {
             var products = await _appDbContext.Products.ToListAsync();
             var orderDetails = await _appDbContext.OrderDetails.ToListAsync();
@@ -55,16 +57,19 @@ namespace Infrastructure.AggregateRepository
             var orderDetailList = (from @base in orderBaseInformation
                                    join ods in orderDetails on @base.OrderId equals ods.OrderId
                                    join p in products on ods.ProductId equals p.Id
-                                   let quantity = ods.Quantity
+                                   let quantityInOrder = ods.Quantity
                                    let productInfo = new Product()
                                    {
                                        Id = p.Id,
                                        Name = p.Name,
                                        Price = p.Price,
                                        Provider = p.Provider,
-                                       ImageName = p.ImageName
+                                       ImageName = p.ImageName,
+                                       Description = p.Description, 
+                                       CategoryId = p.CategoryId,
+                                       CreatedDate = p.CreatedDate,
+                                       QuantityInStock = p.QuantityInStock
                                    }
-
                                    let baseInformation = new BaseInformation
                                    {
                                        OrderId = @base.OrderId,
@@ -74,12 +79,13 @@ namespace Infrastructure.AggregateRepository
                                        OrderDate = @base.OrderDate,
                                        TotalPrice = @base.TotalPrice,
                                        ShipAddress = @base.ShipAddress,
+                                       IsPaid = @base.IsPaid
                                    }
-                                   select new OrderAggregateDetailInformation
+                                   select new OrderDetailAggregate
                                    {
                                        BaseInformation = baseInformation,
                                        Product = productInfo,
-                                       Quantity = quantity
+                                       QuantityInOrder = quantityInOrder
                                    }).ToList(); return orderDetailList;
         }
 
@@ -98,6 +104,7 @@ namespace Infrastructure.AggregateRepository
                                            OrderDate = o.OrderDate,
                                            TotalPrice = o.TotalPrice,
                                            ShipAddress = o.ShipAddress,
+                                           IsPaid = o.IsPaid
                                        }; return orderBaseInformation;
         }
     }
