@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Domain.Dtos
+﻿namespace Domain.Dtos
 {
     public class UserRegistrationDto : UserDto
     {
