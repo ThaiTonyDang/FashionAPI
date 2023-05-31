@@ -28,15 +28,15 @@ namespace API.Controllers
             if (isSuccess)
                 return Ok(new
                 {
-                    StatusCode = HttpStatusCode.Created,
-                    Success = true,
+                    StatusCode = (int)HttpStatusCode.Created,
+                    IsSuccess = true,
                     Message = $"{message}"
                 });
 
             return BadRequest(new
             {
-                StatusCode = HttpStatusCode.BadRequest,
-                Success = false,
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                IsSuccess = false,
                 Message = $"{message}",
             });
         }

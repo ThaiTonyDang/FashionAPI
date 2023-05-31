@@ -27,16 +27,16 @@ namespace API.Controllers.AggregateControllers
             {
                 return Ok(new
                 {
-                    StatusCode = HttpStatusCode.OK,
-                    Success = true,
+                    StatusCode = (int)HttpStatusCode.OK,
+                    IsSuccess = true,
                     Message = "Not Orders Yet !",
                     Data = orders,
                 });
             }    
             return Ok(new
             {
-                StatusCode = HttpStatusCode.OK,
-                Success = true,
+                StatusCode = (int)HttpStatusCode.OK,
+                IsSuccess = true,
                 Message = "Get list success",
                 Data = orders,
             });
@@ -51,15 +51,15 @@ namespace API.Controllers.AggregateControllers
             {
                 return Ok(new
                 {
-                    StatusCode = HttpStatusCode.OK,
-                    Success = false,
+                    StatusCode = (int)HttpStatusCode.OK,
+                    IsSuccess = false,
                     Message = "Not Orders Yet !",
                 });
             }
             return Ok(new
             {
-                StatusCode = HttpStatusCode.OK,
-                Success = true,
+                StatusCode = (int)HttpStatusCode.OK,
+                IsSuccess = true,
                 Message = "Get list success",
                 Data = orderdetails,
             });
@@ -74,8 +74,8 @@ namespace API.Controllers.AggregateControllers
             {
                 return BadRequest(new
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Success = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    IsSuccess = false,
                     Message = "Order Id Is InValid !"
                 });
             }
@@ -86,15 +86,15 @@ namespace API.Controllers.AggregateControllers
             {
                 return NotFound(new
                 {
-                    StatusCode = HttpStatusCode.NotFound,
-                    Success = false,
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    IsSuccess = false,
                     Message = message,
                 });
             }
             return Ok(new
             {
-                StatusCode = HttpStatusCode.OK,
-                Success = true,
+                StatusCode = (int)HttpStatusCode.OK,
+                IsSuccess = true,
                 Message = message,
                 Data = products,
             });
@@ -108,8 +108,8 @@ namespace API.Controllers.AggregateControllers
             {
                 return BadRequest(new
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Success = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    IsSuccess = false,
                     Message = "Order Id Is InValid !"
                 });
             }
@@ -120,15 +120,15 @@ namespace API.Controllers.AggregateControllers
             {
                 return NotFound(new
                 {
-                    StatusCode = HttpStatusCode.OK,
-                    Success = false,
+                    StatusCode = (int)HttpStatusCode.OK,
+                    IsSuccess = false,
                     Message = message,
                 });
             }    
             return Ok(new
             {
-                StatusCode = HttpStatusCode.OK,
-                Success = true,
+                StatusCode = (int)HttpStatusCode.OK,
+                IsSuccess = true,
                 Message = message,
                 Data = baseInformation,
             });
