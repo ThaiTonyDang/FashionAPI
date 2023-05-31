@@ -25,8 +25,8 @@ namespace API.Controllers
             var categories = await _categotyService.GetListCategoryAsync();
             return Ok(new
             {
-                StatusCode = HttpStatusCode.OK,
-                Success = true,
+                StatusCode = (int)HttpStatusCode.OK,
+                IsSuccess = true,
                 Message = "Get list success",
                 Data = categories,
             });
@@ -39,8 +39,8 @@ namespace API.Controllers
             {
                 return NotFound(new
                 {
-                    StatusCode = HttpStatusCode.NotFound,
-                    Success = false,
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    IsSuccess = false,
                     Message = "Categoy Cannot Be Empty !"
                 });
             }
@@ -51,13 +51,13 @@ namespace API.Controllers
                 return Ok(new
                 {
                     StatusCode = HttpStatusCode.Created,
-                    Success = true,
+                    IsSuccess = true,
                     Messenger = $"{message}"
                 });
             return BadRequest(new
             {
-                StatusCode = HttpStatusCode.BadRequest,
-                Success = false,
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                IsSuccess = false,
                 Messenger = $"{message}"
             });
         }
@@ -72,16 +72,16 @@ namespace API.Controllers
             {
                 return Ok(new
                 {
-                    StatusCode = HttpStatusCode.OK,
-                    Success = true,
+                    StatusCode = (int)HttpStatusCode.OK,
+                    IsSuccess = true,
                     Message = $"{message}",
                 });
             }
 
             return BadRequest(new
             {
-                StatusCode = HttpStatusCode.BadRequest,
-                Success = false,
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                IsSuccess = false,
                 Message = $"{message}"
             });
         }
@@ -94,8 +94,8 @@ namespace API.Controllers
             if (!isConverToGuid)
                 return BadRequest(new
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Success = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    IsSuccess = false,
                     Messenger = "Category Id Is Invalid ! Delete Failed !"
                 });
 
@@ -107,16 +107,16 @@ namespace API.Controllers
             {
                 return Ok(new
                 {
-                    StatusCode = HttpStatusCode.NoContent,
-                    Success = true,
+                    StatusCode = (int)HttpStatusCode.NoContent,
+                    IsSuccess = true,
                     Message = $"{message}",
                 });
             }
 
             return BadRequest(new
             {
-                StatusCode = HttpStatusCode.BadRequest,
-                Success = false,
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                IsSuccess = false,
                 Message = $"{message}"
             });
         }
@@ -129,8 +129,8 @@ namespace API.Controllers
             if (!isConverToGuid)
                 return BadRequest(new
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Success = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    IsSuccess = false,
                     Messenger = "Category Id Is Invalid ! Delete Failed !"
                 });
 
@@ -142,8 +142,8 @@ namespace API.Controllers
             {
                 return Ok(new
                 {
-                    StatusCode = HttpStatusCode.NoContent,
-                    Success = true,
+                    StatusCode = (int)HttpStatusCode.NoContent,
+                    IsSuccess = true,
                     Message = $"{message}",
                     Data = categoryDto
                 });
@@ -151,8 +151,8 @@ namespace API.Controllers
 
             return BadRequest(new
             {
-                StatusCode = HttpStatusCode.BadRequest,
-                Success = false,
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                IsSuccess = false,
                 Message = $"{message}"
             });
         }

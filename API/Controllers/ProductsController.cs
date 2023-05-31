@@ -1,4 +1,5 @@
-﻿using Domain.Dtos;
+﻿using API.Dtos;
+using Domain.Dtos;
 using Domain.Services;
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -25,12 +26,11 @@ namespace API.Controllers
             var message = "";
             if (product == null)
             {
-                return NotFound(new
-                {
-                    StatusCode = HttpStatusCode.NotFound,
-                    Success = false,
-                    Message = "Product Cannot Be Empty !"
-                });
+                return NotFound(new Error<string>(
+                        (int)HttpStatusCode.NotFound,
+                        "Create Failed",
+                        "Product can not be null")
+                    );
             }
 
             var result = await _productService.CreateProductAsync(product);
@@ -39,15 +39,15 @@ namespace API.Controllers
             if (isSuccess)
             return Ok(new
             {
-                StatusCode = HttpStatusCode.Created,
-                Success = true,
+                StatusCode = (int)HttpStatusCode.Created,
+                IsSuccess = true,
                 Message = $"{message}"
             });
 
             return BadRequest(new
             {
                 StatusCode = HttpStatusCode.BadRequest,
-                Success = false,
+                IsSuccess = false,
                 Message = $"{message}",
             });         
         }
@@ -59,8 +59,8 @@ namespace API.Controllers
 
             return Ok(new
             {
-                StatusCode = HttpStatusCode.OK,
-                Success = true,
+                StatusCode = (int)HttpStatusCode.OK,
+                IsSuccess = true,
                 Message = "Get list success",
                 Data = products,
             });
@@ -76,15 +76,15 @@ namespace API.Controllers
             {
                 return Ok(new
                 {
-                    StatusCode = HttpStatusCode.OK,
-                    Success = true,
+                    StatusCode = (int)HttpStatusCode.OK,
+                    IsSuccess = true,
                     Message = $"{message}",                    
                 });
             }
             return BadRequest(new
             {
-                StatusCode = HttpStatusCode.BadRequest,
-                Success = false,
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                IsSuccess = false,
                 Message = $"{message}"
             });
         }
@@ -97,8 +97,8 @@ namespace API.Controllers
             {
                 return BadRequest(new
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Success = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    IsSuccess = false,
                     Message = "Product Id Is InValid ! Delete Failed !"
                 });
             }    
@@ -109,15 +109,15 @@ namespace API.Controllers
             {
                 return Ok(new
                 {
-                    StatusCode = HttpStatusCode.NoContent,
-                    Success = true,
+                    StatusCode = (int)HttpStatusCode.NoContent,
+                    IsSuccess = true,
                     Message = $"{message}",
                 });
             }
             return BadRequest(new
             {
-                StatusCode = HttpStatusCode.BadRequest,
-                Success = false,
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                IsSuccess = false,
                 Message = $"{message}"
             });                            
         }
@@ -130,8 +130,8 @@ namespace API.Controllers
             {
                 return BadRequest(new
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Success = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    IsSuccess = false,
                     Message = "Product Id Is InValid ! Delete Failed !"
                 });
             }
@@ -142,16 +142,16 @@ namespace API.Controllers
             {
                 return Ok(new
                 {
-                    StatusCode = HttpStatusCode.NoContent,
-                    Success = true,
+                    StatusCode = (int)HttpStatusCode.NoContent,
+                    IsSuccess = true,
                     Message = $"{message}",
                     Data = productDto
                 });
             }
             return BadRequest(new
             {
-                StatusCode = HttpStatusCode.BadRequest,
-                Success = false,
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                IsSuccess = false,
                 Message = $"{message}"
             });
 

@@ -26,8 +26,8 @@ namespace API.Controllers
             {
                 return BadRequest(new
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Success = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    IsSuccess = false,
                     Message = "Please Upload File"
                 });
             }
@@ -41,8 +41,8 @@ namespace API.Controllers
             var dataList = new List<string> { fullFileName, link } ;
             return Ok(new
             {
-                StatusCode = HttpStatusCode.Created,
-                Success = true,
+                StatusCode = (int)HttpStatusCode.Created,
+                IsSuccess = true,
                 Message = "Created Image Success !",
                 Data = dataList
             });
@@ -55,7 +55,7 @@ namespace API.Controllers
             {
                 return BadRequest(new
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
                     Message = "File's Name Cannot Be Empty !"
                 });
             }
@@ -65,7 +65,7 @@ namespace API.Controllers
             {
                 return NotFound(new
                 {
-                    StatusCode = HttpStatusCode.NotFound,
+                    StatusCode = (int)HttpStatusCode.NotFound,
                     Message = "Image Not Found !"
                 });
             }
