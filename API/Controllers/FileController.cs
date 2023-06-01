@@ -7,6 +7,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Utilities.GlobalHelpers;
 
+
 namespace API.Controllers
 {
     [Route("api/[controller]")]
@@ -35,15 +36,24 @@ namespace API.Controllers
             var baseUrl = HttpContext.Request.BaseUrl();
             var fullFileName = _fileService.GetFullFileName(file.FileName);
 
-            var data = await file.GetBytes();
-            await this._fileService.SaveFileAsync(fullFileName, data);
+            if (file.ContentType.Contains("image"))
+            {
+                fullFileName =  _fileService.GetFullImageName(fullFileName, SIZE.Width, SIZE.Height);
+                var stream = file.OpenReadStream();
+                _fileService.ResizeImage(stream, fullFileName);
+            }
+            else
+            {
+                var data = await file.GetBytes();
+                await this._fileService.SaveFileAsync(fullFileName, data);
+            }         
             var link = this._fileService.GetFileLink(baseUrl, HTTTP.SLUG, fullFileName);
             var dataList = new List<string> { fullFileName, link } ;
             return Ok(new
             {
                 StatusCode = (int)HttpStatusCode.Created,
                 IsSuccess = true,
-                Message = "Created Image Success !",
+                Message = "Created File Or Image Success !",
                 Data = dataList
             });
         }
