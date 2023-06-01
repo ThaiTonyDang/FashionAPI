@@ -17,4 +17,10 @@ namespace Utilities.GlobalHelpers
     {
         public const string SLUG = "resource";
     }
+
+    public struct SIZE
+    {
+        public const Int32 Width = 500;
+        public const Int32 Height = 666;
+    }
 }
