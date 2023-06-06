@@ -131,7 +131,7 @@ namespace API.Controllers
                 {
                     StatusCode = (int)HttpStatusCode.BadRequest,
                     IsSuccess = false,
-                    Messenger = "Category Id Is Invalid ! Delete Failed !"
+                    Messenger = "Category Id Is Invalid !"
                 });
 
             var result = await _categotyService.GetCategoryById(new Guid(categoryId));
