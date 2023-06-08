@@ -28,21 +28,24 @@ namespace Infrastructure.Repositories
                 await File.WriteAllBytesAsync(path, data);
         }
 
-        public string GetFullPath(string filePath)
+        public string GetFullPath(string fileName, string fileFolder)
         {
             var systemPath = GetSystemPath();
 
             if (!Directory.Exists(systemPath))
                 Directory.CreateDirectory(systemPath);
 
-            var fullPath = Path.Combine(systemPath, filePath);
+            var folder = Path.Combine(systemPath, fileFolder);
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+            var fullPath = Path.Combine(folder, fileName);
             return fullPath;
         }
 
-        public async Task<byte[]> GetFileBytes(string fileName)
+        public async Task<byte[]> GetFileBytes(string fileName, string fileFolder)
         {
             var hostUrl = GetSystemPath();
-            var fileUrl = Path.Combine(hostUrl, fileName);
+            var fileUrl = Path.Combine(hostUrl, fileFolder, fileName);
            
             if (Directory.Exists(hostUrl) && File.Exists(fileUrl))
             {

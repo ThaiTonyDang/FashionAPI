@@ -15,5 +15,6 @@
         public Guid CategoryId { get; set; }
         public Category Category { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
+        public ICollection<SubImage> SubImages { get; set; }
     }
 }

@@ -136,7 +136,7 @@ namespace Infrastructure.Repositories
             }
             catch (Exception exception)
             {
-                return Tuple.Create(default(Product), $"{exception.InnerException.Message}! Product Does Not Exist !");
+                return Tuple.Create(default(Product), $"{exception.Message}! Product Does Not Exist !");
             }
 
         }
