@@ -21,11 +21,11 @@ namespace Domain.Services
 				Name = p.Name,
 				Price = p.Price,
 				Provider = p.Provider,
-				Description = p.Description,
-				ImageName = p.ImageName,
+                ImageName = p.MainImageName,
+                IsEnabled = p.IsEnabled,
+                CategoryId = p.CategoryId,
+                Description = p.Description,
 				QuantityInStock = p.QuantityInStock,
-				IsEnabled = p.IsEnabled,
-				CategoryId = p.CategoryId
 			}).ToList();
 
 			return listProducts;
@@ -41,13 +41,14 @@ namespace Domain.Services
 			{
 				Id = productDto.Id,
 				Name = productDto.Name,
-				Provider = productDto.Provider,
-				Price = productDto.Price,
-				Description = productDto.Description,
-				CategoryId = productDto.CategoryId,
-				ImageName = productDto.ImageName,
+                Price = productDto.Price,
+                Provider = productDto.Provider,
+                MainImageName = productDto.ImageName,
+                IsEnabled = productDto.IsEnabled,
+                CategoryId = productDto.CategoryId,
+                Description = productDto.Description,
+				CreatedDate = productDto.CreateDate,
 				QuantityInStock = productDto.QuantityInStock,
-				IsEnabled = productDto.IsEnabled
 			};
 
 			var result = await _productRepository.CreateAsync(product);
@@ -67,11 +68,12 @@ namespace Domain.Services
 				Name = productDto.Name,
 				Price = productDto.Price,
 				Provider = productDto.Provider,
-				CategoryId = productDto.CategoryId,
-				Description = productDto.Description,
-				QuantityInStock= productDto.QuantityInStock,
-				IsEnabled = productDto.IsEnabled,
-				ImageName = imagePath
+                MainImageName = imagePath,
+                IsEnabled = productDto.IsEnabled,
+                CategoryId = productDto.CategoryId,
+                Description = productDto.Description,
+				ModifiedDate = productDto.ModifiedDate,
+				QuantityInStock= productDto.QuantityInStock,		
 			};
 
 			var result = await _productRepository.UpdateAsync(product);
@@ -118,7 +120,9 @@ namespace Domain.Services
 				Description = product.Description,
 				QuantityInStock = product.QuantityInStock,
 				IsEnabled = product.IsEnabled,
-				ImageName = product.ImageName
+				ImageName = product.MainImageName,
+				ModifiedDate = product.ModifiedDate,
+				CreateDate = product.CreatedDate
 			};
 
 		    return Tuple.Create(productDto, message);

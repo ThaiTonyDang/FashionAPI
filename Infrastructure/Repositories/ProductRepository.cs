@@ -31,11 +31,12 @@ namespace Infrastructure.Repositories
                    return Tuple.Create(false, "Product And Category Id Is Invalid");
 
                 var productEntity = _appDbContext.Products
-                                                 .Where(p => p.Name == product.Name && p.Provider == product.Provider)
+                                                 .Where(p => p.Name.ToLower() == product.Name.ToLower()
+                                                  && p.Provider.ToLower() == product.Provider.ToLower())
                                                  .FirstOrDefault();
                 if (productEntity != null)
                 {
-                    return Tuple.Create(false, "Product Name And Product Provider Already Exist");
+                    return Tuple.Create(false, "Product Name And Product Provider Already Exist! Created Fail !");
                 }
                 
                 await _appDbContext.Products.AddAsync(product);
@@ -45,7 +46,7 @@ namespace Infrastructure.Repositories
             }
             catch (Exception exception)
             {
-                return Tuple.Create(false, $"An Error Occurred : {exception.Message} Created Fail !");
+                return Tuple.Create(false, $"An Error Occurred : {exception.Message} ! Created Fail !");
             }                 
         }
 
@@ -84,9 +85,10 @@ namespace Infrastructure.Repositories
                 productEntity.Price = product.Price;
                 productEntity.Description = product.Description;
                 productEntity.CategoryId = product.CategoryId;
-                productEntity.ImageName = product.ImageName;
+                productEntity.MainImageName = product.MainImageName;
                 productEntity.QuantityInStock = product.QuantityInStock;
                 productEntity.IsEnabled = product.IsEnabled;
+                productEntity.ModifiedDate = product.ModifiedDate;
 
                 _appDbContext.Products.Update(productEntity);
                 var result = _appDbContext.SaveChanges();

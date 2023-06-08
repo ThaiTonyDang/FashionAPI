@@ -30,7 +30,7 @@ namespace Domain.Services
                 Status = orderDto.Status,
                 IsPaid = orderDto.IsPaid,
                 TotalPrice = orderDto.TotalPrice,
-                CustomerId = orderDto.CustomerId
+                CustomerId = orderDto.CustomerId,             
             };
 
             var result = await _orderRepository.CreateOrder(order);

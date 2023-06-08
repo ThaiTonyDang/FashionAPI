@@ -8,6 +8,6 @@ namespace Domain.Services
         public Task<Tuple<bool, string>> CreateCategoryAsync(CategoryDto categoryDto);
         public Task<Tuple<bool, string>> UpdateCategoryAsync(CategoryDto categoryDto);
         public Task<Tuple<bool, string>> DeleteCategoryAsync(Guid id);
-        public Task<Tuple<CategoryDto, string>> GetCategoryById(Guid id);
+        public Task<Tuple<CategoryDto, string>> GetCategoryByIdAsync(Guid id);
     }
 }
