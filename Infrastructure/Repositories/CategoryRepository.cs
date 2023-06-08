@@ -27,7 +27,7 @@ namespace Infrastructure.Repositories
 
                 if (category.Id == default(Guid)) return Tuple.Create(false, "Category Id Is Invalid");
                 var categoryEntity = _appDbContext.Categories
-                                                  .Where(c => c.Name == category.Name)
+                                                  .Where(c => c.Name.ToLower() == category.Name.ToLower())
                                                   .FirstOrDefault();
                 if (categoryEntity != null) return Tuple.Create(false, "Category Name Already Exists");
                 await _appDbContext.AddAsync(category);
@@ -36,7 +36,7 @@ namespace Infrastructure.Repositories
             }
             catch (Exception exception)
             {
-                return Tuple.Create(false, $"An Error Occurred : {exception.InnerException.Message}");
+                return Tuple.Create(false, $"An Error Occurred : {exception.Message}");
             }
         }
 
@@ -66,20 +66,23 @@ namespace Infrastructure.Repositories
                 var message = searchResult.Item2;
                 if (categoryEntity == null || categoryEntity.Id == default(Guid))
                 {
-                    return Tuple.Create(false, message + " Update Failed !");
+                    return Tuple.Create(false, message + "Category Not Found! Update Failed !");
                 }
 
                 categoryEntity.Name = category.Name;
                 categoryEntity.Description = category.Description;
+                categoryEntity.ImageName = category.ImageName;
+                categoryEntity.CreatedDate = category.CreatedDate;
+                categoryEntity.ModifiedDate = category.ModifiedDate;
 
                 _appDbContext.Update(categoryEntity);
                 var result = _appDbContext.SaveChanges();
-                message = "Edit Category Success !";
+                message = "Update Category Success !";
                 return Tuple.Create(result > 0, message);
             }
             catch (Exception exception)
             {
-                return Tuple.Create(false, $"An Error Occurred : {exception.InnerException.Message}");
+                return Tuple.Create(false, $"An Error Occurred : {exception.Message}");
             }
         }
 
@@ -94,7 +97,7 @@ namespace Infrastructure.Repositories
 
                 if (categoryEntity == null)
                 {
-                    return Tuple.Create(false, message + " Deleted Category Failed !");
+                    return Tuple.Create(false, message + "Deleted Category Failed !");
                 }
                 _appDbContext.Categories.Remove(categoryEntity);
                 var result = _appDbContext.SaveChanges();
@@ -102,7 +105,7 @@ namespace Infrastructure.Repositories
             }
             catch (Exception exception)
             {
-                return Tuple.Create(false, $"An Error Occurred : {exception.InnerException.Message}! Deleted Category Failed !");
+                return Tuple.Create(false, $"An Error Occurred : {exception.Message}! Deleted Category Failed !");
             }                   
         }
 
@@ -117,7 +120,7 @@ namespace Infrastructure.Repositories
             }
             catch (Exception exception)
             {
-                return Tuple.Create(default(Category), $"{exception.InnerException.Message} ");
+                return Tuple.Create(default(Category), $"{exception.Message} ");
             }
         }
     }

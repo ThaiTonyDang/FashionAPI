@@ -64,7 +64,7 @@ namespace Infrastructure.AggregateRepository
                                        Name = p.Name,
                                        Price = p.Price,
                                        Provider = p.Provider,
-                                       ImageName = p.ImageName,
+                                       MainImageName = p.MainImageName,
                                        Description = p.Description, 
                                        CategoryId = p.CategoryId,
                                        CreatedDate = p.CreatedDate,

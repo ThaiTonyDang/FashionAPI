@@ -115,7 +115,7 @@ namespace Domain.AggregateService
                     Name = orderDetail.Product.Name,
                     Price = orderDetail.Product.Price,
                     Provider = orderDetail.Product.Provider,
-                    ImageName = orderDetail.Product.ImageName,
+                    ImageName = orderDetail.Product.MainImageName,
                     Description = orderDetail.Product.Description,  
                     QuantityInOrder = orderDetail.QuantityInOrder,                    
                 },

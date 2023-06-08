@@ -16,6 +16,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using Infrastructure.AggregateRepository;
 using Domain.AggregateService;
+using API.ExceptionMiddleware;
 
 namespace API
 {
@@ -69,6 +70,7 @@ namespace API
 
             services.AddIdentityServices();
             services.AddIdentityTokenConfig(Configuration);
+            services.AddJwtAuthen(Configuration);
 
             services.Configure<FileConfig>(Configuration.GetSection("FileConfig"));
 
@@ -85,7 +87,7 @@ namespace API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FashionAPI.Web v1"));
             }
 
-            //app.UseMiddleware<ExceptionHandleMiddleware>();
+            app.UseMiddleware<ExceptionHandleMiddleware>();
 
             var fileConfig = Configuration.GetSection("FileConfig");
             if (fileConfig.Get<FileConfig>() != null)

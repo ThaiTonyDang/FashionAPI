@@ -18,5 +18,7 @@ namespace Domain.Dtos
         public string Description { get; set; }
 
         public string ImageName { get; set; }
+        public DateTime CreateDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
     }
 }

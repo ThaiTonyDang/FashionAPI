@@ -22,7 +22,9 @@ namespace Domain.Services
             {
                 Id = categoryDto.Id,
                 Name = categoryDto.Name,
-                Description = categoryDto.Description             
+                Description = categoryDto.Description,
+                ImageName = categoryDto.ImageName,
+                CreatedDate = categoryDto.CreateDate
             };
 
             var result = await _categoryRepository.CreateAsync(category);
@@ -38,6 +40,9 @@ namespace Domain.Services
                 Id = category.Id,
                 Name = category.Name,
                 ImageName = category.ImageName,
+                CreateDate = category.CreatedDate,
+                ModifiedDate = category.ModifiedDate
+
             }).ToList();
 
             return listCategoryViewModel;
@@ -51,7 +56,9 @@ namespace Domain.Services
             {
                 Id = categoryDto.Id,
                 Name = categoryDto.Name,
-                Description = categoryDto.Description
+                Description = categoryDto.Description,
+                ImageName = categoryDto.ImageName,
+                ModifiedDate = categoryDto.ModifiedDate
             };
 
             var result = await _categoryRepository.UpdateAsync(category);
@@ -75,7 +82,7 @@ namespace Domain.Services
             return Tuple.Create(isSuccess, message);
         }
 
-        public async Task<Tuple<CategoryDto, string>> GetCategoryById(Guid id)
+        public async Task<Tuple<CategoryDto, string>> GetCategoryByIdAsync(Guid id)
         {
             if (id == default(Guid))
             {
@@ -94,7 +101,10 @@ namespace Domain.Services
             {
                 Id = category.Id,
                 Name = category.Name,
-                Description = category.Description
+                Description = category.Description,
+                ImageName = category.ImageName,
+                CreateDate = category.CreatedDate,
+                ModifiedDate = category.ModifiedDate
             };
 
             return Tuple.Create(categoryDto, message);
