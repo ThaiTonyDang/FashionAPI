@@ -8,11 +8,11 @@ namespace Domain.Services
 {
     public interface IFileService
     {
-        public string GetFileLink(string domain, string resource, string fullFileName);
-        public Task SaveFileAsync(string fileName, byte[] data);
+        public string GetFileLink(string domain, string sublink, string fullFileName);
+        public Task SaveFileAsync(string fileName, byte[] data, string fileFolder);
         public string GetFullFileName(string fileName);
-        public Task<byte[]> GetFileBytesAsync(string fileName);
+        public Task<byte[]> GetFileBytesAsync(string fileName, string fileFolder);
         public string GetFullImageName(string imageName, int width, int height);
-        public void ResizeImage(Stream stream, string fullFileName);       
+        public void ResizeImage(Stream stream, string fullFileName, string fileFolder);       
     }
 }

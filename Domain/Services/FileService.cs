@@ -15,14 +15,14 @@ namespace Domain.Services
             _fileRepository = fileRepository;
         }
 
-        public string GetFileLink(string domain, string resource, string fullFileName) => $"{domain}{resource}/{fullFileName}";
+        public string GetFileLink(string domain, string sublink, string fullFileName) => $"{domain}{sublink}/{fullFileName}";
 
         public string GetFullFileName(string fileName)
         {
             if (string.IsNullOrEmpty(fileName))
                 return string.Empty;
 
-            var dateTime = DateTime.Now.ToString("yyyyMMdd");
+            var dateTime = DateTime.Now.ToString("yyyyMMddhhmmss");
             var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
             var extensions = Path.GetExtension(fileName);
 
@@ -30,43 +30,43 @@ namespace Domain.Services
             return filePath;
         }
 
-        public async Task SaveFileAsync(string fileName, byte[] data)
+        public async Task SaveFileAsync(string fileName, byte[] data, string fileFolder)
         {
-            var path = _fileRepository.GetFullPath(fileName);
-            await this._fileRepository.SaveFile(path, data);
+            var fullPath = _fileRepository.GetFullPath(fileName, fileFolder);
+            await this._fileRepository.SaveFile(fullPath, data);
         }
 
-        public async Task<byte[]> GetFileBytesAsync(string fileName)
+        public async Task<byte[]> GetFileBytesAsync(string fileName, string fileFolder)
         {
-            var fileBytes = await _fileRepository.GetFileBytes(fileName);
+            var fileBytes = await _fileRepository.GetFileBytes(fileName, fileFolder);
             return fileBytes;
         }
 
-        public void ResizeImage(Stream stream, string fullFileName)
+        public void ResizeImage(Stream stream, string fullFileName, string fileFolder)
         {
             using (var image = Image.Load(stream))
             {
                 image.Mutate(x => x.Resize(SIZE.Width, SIZE.Height));
-                var fullPath = GetImageFullPath(fullFileName);
+                var fullPath = GetImageFullPath(fullFileName, fileFolder);
                 image.Save(fullPath);
             }           
         }
 
-        public string GetFullImageName(string imageName, int width, int height)
+        public string GetFullImageName(string fileName, int width, int height)
         {
-            if (string.IsNullOrEmpty(imageName))
+            if (string.IsNullOrEmpty(fileName))
                 return string.Empty;
 
-            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(imageName);
-            var extensions = Path.GetExtension(imageName);
+            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+            var extensions = Path.GetExtension(fileName);
 
-            var filePath = fileNameWithoutExtension.Replace(" ", "").Trim() + $"-w{width}-h{height}-{DateTime.Now.ToString("hhmmss")}" + extensions;
-            return filePath;
+            fileName = fileNameWithoutExtension.Replace(" ", "").Trim() + $"-{Guid.NewGuid()}-w{width}-h{height}-{DateTime.Now.ToString("yyyyMMddhhmmss")}" + extensions;
+            return fileName;
         }
 
-        private string GetImageFullPath(string imageName)
+        private string GetImageFullPath(string imageName, string fileFolder)
         {
-            var path = _fileRepository.GetFullPath(imageName);
+            var path = _fileRepository.GetFullPath(imageName, fileFolder);
             return path;
         }
     }
