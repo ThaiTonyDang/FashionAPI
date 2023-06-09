@@ -22,6 +22,30 @@ namespace Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("Infrastructure.Models.CartItem", b =>
+                {
+                    b.Property<Guid>("CartId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("CartId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Carts");
+                });
+
             modelBuilder.Entity("Infrastructure.Models.Category", b =>
                 {
                     b.Property<Guid>("Id")
@@ -427,6 +451,23 @@ namespace Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Infrastructure.Models.CartItem", b =>
+                {
+                    b.HasOne("Infrastructure.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId");
+
+                    b.HasOne("Infrastructure.Models.User", "User")
+                        .WithMany("Carts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Infrastructure.Models.Order", b =>
                 {
                     b.HasOne("Infrastructure.Models.Customer", "Customer")
@@ -563,6 +604,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Infrastructure.Models.User", b =>
                 {
+                    b.Navigation("Carts");
+
                     b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618

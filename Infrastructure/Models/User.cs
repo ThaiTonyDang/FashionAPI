@@ -13,5 +13,6 @@ namespace Infrastructure.Models
         public DateTime CreatedDate { get; set; }
         public DateTime LastActiveDate { get; set; }
         public virtual ICollection<UserRole> UserRoles { get; set; }
+        public virtual ICollection<CartItem> Carts { get; set; }
     }
 }
