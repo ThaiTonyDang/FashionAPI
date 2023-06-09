@@ -1,4 +1,4 @@
-using API.ExceptionMiddleware;
+using API.Extensions;
 using Domain.Services;
 using Infrastructure.Config;
 using Infrastructure.DataContext;
@@ -12,6 +12,11 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System.IO;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using Infrastructure.AggregateRepository;
+using Domain.AggregateService;
+using API.ExceptionMiddleware;
 
 namespace API
 {
@@ -27,20 +32,49 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddRouting(options =>
+            {
+                options.LowercaseUrls = true;
+            });
+
+            services.AddControllers().AddJsonOptions(opts =>
+            {
+                opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
             });
+
+            services.AddDbContext<AppDbContext>(x =>
+                                   x.UseSqlServer(Configuration.GetConnectionString("FashionWeb")));
+
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+            services.AddScoped<IOrderAggregateRepository, OrderAggregateRepository>();
+            services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IOrderDetailService, OrderDetailService>();
             services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IOrderAggregateService, OrderAggregateService>();
+            services.AddScoped<IUserRepository, UserRepository>();
+
+            services.AddIdentityServices();
+            services.AddIdentityTokenConfig(Configuration);
+            services.AddJwtAuthen(Configuration);
 
             services.Configure<FileConfig>(Configuration.GetSection("FileConfig"));
-            services.AddDbContext<AppDbContext>(x =>
-                                               x.UseSqlServer(Configuration.GetConnectionString("FashionWeb")));
+
+            services.AddHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,16 +99,18 @@ namespace API
                 }); 
             }
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
 
+            app.UseAuthentication(); 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+
+            app.UseHealthChecks("/health");
         }
     }
 }

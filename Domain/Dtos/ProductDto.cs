@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Utilities.GlobalHelpers;
 
-namespace Domain.DTO
+namespace Domain.Dtos
 {
     public class ProductDto
     {
@@ -27,5 +26,8 @@ namespace Domain.DTO
         public string ImageName { get; set; }
         public bool IsEnabled { get; set; }
         public string Description { get; set; }
+        public int QuantityInOrder { get; set; }
+        public DateTime CreateDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
     }
 }

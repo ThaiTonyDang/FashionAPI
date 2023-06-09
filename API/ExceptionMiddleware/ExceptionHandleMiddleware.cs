@@ -1,13 +1,8 @@
-﻿using API.Models;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using API.Dtos;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace API.ExceptionMiddleware
@@ -31,23 +26,24 @@ namespace API.ExceptionMiddleware
             }
             catch (Exception exception)
             {
-                var errorDetails = exception.Message;
-                _logger.LogError(errorDetails, exception.StackTrace);
-                await HandleExceptionAsync(context, exception, errorDetails);
+                var errorMessages = exception.Message;
+                _logger.LogError(errorMessages, exception.StackTrace);
+                await HandleExceptionAsync(context, errorMessages);
             }           
         }
 
-        private static async Task HandleExceptionAsync(HttpContext context, Exception exception, string errorDetails)
+        private static async Task HandleExceptionAsync(HttpContext context, string messages)
         {                   
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            await context.Response.WriteAsync(new ErrorDetails()
-            {
-                StatusCode = context.Response.StatusCode,
-                Message = "Internal Server Error ! There is an error on the server side",
-                ErrorsDetail = errorDetails.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None)
-            }.ToString()); ;
+            var error = new Error<string[]>(
+                    context.Response.StatusCode,
+                    "Internal Server Error ! There is an error on the server side",
+                    messages.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None)
+                );
+
+            await context.Response.WriteAsync(error.ToString());
         }
     }
 }

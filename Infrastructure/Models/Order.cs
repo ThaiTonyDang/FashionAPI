@@ -10,7 +10,11 @@ namespace Infrastructure.Models
     {
         public Guid Id { get; set; }
         public DateTime OrderDate { get; set; }
-        public string Status { get; set; }
+        public DateTime RequiredDate { get; set; }
+        public string ShipAddress { get; set; }
+        public decimal TotalPrice { get; set; }
+        public bool Status { get; set; }
+        public bool IsPaid { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
         public Guid CustomerId { get; set; }
         public Customer Customer { get; set; }

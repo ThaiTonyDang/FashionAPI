@@ -16,5 +16,6 @@ namespace Infrastructure.Models
         public Product Product { get; set; }
         public decimal Price { get; set; }
         public int Quantity { get; set; }
+        public double Discount { get; set; }
     }
 }

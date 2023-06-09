@@ -1,6 +1,7 @@
 ﻿using Infrastructure.DataContext;
 using Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace Infrastructure.Repositories
 {
@@ -17,87 +18,127 @@ namespace Infrastructure.Repositories
             _appDbContext = appDbContext;
         }
 
-        public async Task<bool> AddAsync(Product product)
+        public async Task<Tuple<bool, string>> CreateAsync(Product product)
         {
-            if(product == null)
+            try
             {
-               throw new ProductException("Product can not be null");
-            }
+                if (product == null)
+                {
+                    throw new ProductException("Product can not be null");              
+                }
 
-            if (product.Id == default(Guid) || product.CategoryId == default(Guid))
-                return false;
+                if (product.Id == default(Guid) || product.CategoryId == default(Guid))
+                   return Tuple.Create(false, "Product And Category Id Is Invalid");
 
-            var productEntity = _appDbContext.Products
-                                             .Where(p => p.Name == product.Name && p.Provider == product.Provider)
-                                             .FirstOrDefault();
-
-            if (productEntity == null)
-            {
-                await _appDbContext.AddAsync(product);
+                var productEntity = _appDbContext.Products
+                                                 .Where(p => p.Name.ToLower() == product.Name.ToLower()
+                                                  && p.Provider.ToLower() == product.Provider.ToLower())
+                                                 .FirstOrDefault();
+                if (productEntity != null)
+                {
+                    return Tuple.Create(false, "Product Name And Product Provider Already Exist! Created Fail !");
+                }
+                
+                await _appDbContext.Products.AddAsync(product);
                 var result = await _appDbContext.SaveChangesAsync();
-                return (result > 0);
-            }
+                return Tuple.Create(result > 0, "Created Product Success !");
 
-            return false;
+            }
+            catch (Exception exception)
+            {
+                return Tuple.Create(false, $"An Error Occurred : {exception.Message} ! Created Fail !");
+            }                 
         }
 
-        public async Task<List<Product>> GetListProducts()
+        public async Task<List<Product>> GetListProductsAsync()
         {
             var list = await _appDbContext.Products.ToListAsync();
             return list;
         }
 
-        public async Task<bool> UpdateAsync(Product product)
+        public async Task<Tuple<bool, string>> UpdateAsync(Product product)
         {
-            if (product == null)
+            try
             {
-                throw new ProductException("Product can not be null");
-            }
+                if (product == null)
+                {
+                    throw new ProductException("Product can not be null");
+                }
+                if (product.Id == default(Guid) || product.CategoryId == default(Guid))
+                   return Tuple.Create(false, "Product Id Or Category Id Invalid !");
+                var productEntity = _appDbContext.Products.Where(p => p.Id != product.Id 
+                                                           && p.Name == product.Name && p.Provider == product.Provider)
+                                                           .FirstOrDefault();
+                if (productEntity != null) return Tuple.Create(false, "Prodcut Name And Provider Already Exists! Can't Update");
 
-            if (product.Id == default(Guid) || product.CategoryId == default(Guid))
-                return false;
+                var searchResult = await GetProductByIdAsync(product.Id);
+                productEntity = searchResult.Item1;
+                var message = searchResult.Item2;
 
-            var productEntity = await GetProductByIdAsync(product.Id);
-
-            if (productEntity != null)
-            {
+                if (productEntity == null)
+                {
+                    return Tuple.Create(false , message + " Updated Product Failed !");
+                }
                 productEntity.Id = product.Id;
                 productEntity.Name = product.Name;
                 productEntity.Provider = product.Provider;
                 productEntity.Price = product.Price;
                 productEntity.Description = product.Description;
                 productEntity.CategoryId = product.CategoryId;
-                productEntity.ImagePath = product.ImagePath;
+                productEntity.MainImageName = product.MainImageName;
                 productEntity.QuantityInStock = product.QuantityInStock;
                 productEntity.IsEnabled = product.IsEnabled;
+                productEntity.ModifiedDate = product.ModifiedDate;
 
-                _appDbContext.Update(productEntity);
+                _appDbContext.Products.Update(productEntity);
                 var result = _appDbContext.SaveChanges();
-                return (result > 0);
+                return Tuple.Create(result > 0, "Updated Product Success !");                         
             }
-
-            return false;
-        }
-
-        public async Task<bool> DeleteAsync(Guid id)
-        {
-            var product = await GetProductByIdAsync(id);
-
-            if (product != null)
+            catch (Exception exception)
             {
-                _appDbContext.Remove(product);
-                var result = await _appDbContext.SaveChangesAsync();
-                return (result > 0);
+                return Tuple.Create(false, $"An Error Occurred : {exception.Message}! Updated Product Fail !");
             }
-
-            return false;
         }
 
-        public async Task<Product> GetProductByIdAsync(Guid id)
+        public async Task<Tuple<bool, string>> DeleteAsync(Guid id)
         {
-            var product = await _appDbContext.Products.Where(p => p.Id == id).FirstOrDefaultAsync();
+            try
+            {
+                var searchResult = await GetProductByIdAsync(id);
 
-            return product;
+                var productEntity = searchResult.Item1;
+                var message = searchResult.Item2;
+
+                if (productEntity == null)
+                {
+                    return Tuple.Create(false, message + " Deleted Product Failed !");
+                }
+                _appDbContext.Products.Remove(productEntity);
+                var result = _appDbContext.SaveChanges();
+                return Tuple.Create(result > 0, "Deleled Product Success !");
+            }
+            catch (Exception exception)
+            {
+                return Tuple.Create(false, $"An Error Occurred : {exception.InnerException.Message}!" +
+                                   $" Deleted Product Failed !");
+            }
+        }
+
+        public async Task<Tuple<Product, string>> GetProductByIdAsync(Guid id)
+        {
+            try
+            {
+                var product = await _appDbContext.Products.FindAsync(id);
+
+                if (product == null) return Tuple.Create(default(Product), "Not Found! Product Does Not Exist !");
+
+                return Tuple.Create(product, "Found the Success Product");
+            }
+            catch (Exception exception)
+            {
+                return Tuple.Create(default(Product), $"{exception.Message}! Product Does Not Exist !");
+            }
+
         }
     }
 }
