@@ -69,7 +69,7 @@ namespace Infrastructure.Repositories
                 var productEntity = _appDbContext.Products.Where(p => p.Id != product.Id 
                                                            && p.Name == product.Name && p.Provider == product.Provider)
                                                            .FirstOrDefault();
-                if (productEntity != null) return Tuple.Create(false, "Prodcut Name And Provider Already Exists! Can't Update");
+                if (productEntity != null) return Tuple.Create(false, "Product Name And Provider Already Exists! Try Again");
 
                 var searchResult = await GetProductByIdAsync(product.Id);
                 productEntity = searchResult.Item1;

@@ -18,11 +18,13 @@ namespace Infrastructure.DataContext
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<SubImage> SubImages { get; set; }
+        public DbSet<Cart> CartItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<OrderDetail>().HasKey(key => new {key.OrderId, key.ProductId});
+            modelBuilder.Entity<Cart>().ToTable("Cart").HasKey(key => new {key.ProductId, key.UserId});
             modelBuilder.ApplyConfiguration(new UserConfigurations());
             modelBuilder.ApplyConfiguration(new RoleConfigurations());
             modelBuilder.ApplyConfiguration(new UserRoleConfigurations());

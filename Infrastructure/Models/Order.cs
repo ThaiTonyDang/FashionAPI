@@ -17,6 +17,5 @@ namespace Infrastructure.Models
         public bool IsPaid { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
         public Guid CustomerId { get; set; }
-        public Customer Customer { get; set; }
     }
 }
