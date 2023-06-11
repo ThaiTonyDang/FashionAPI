@@ -12,5 +12,6 @@ namespace Domain.Services
     {
         public Task<Tuple<bool, string>> SaveCartAsyn(CartItemDto cartDto, Guid userId);
         public List<CartItemDto> GetCartItems(Guid userId);
+        public CartItemDto GetCartItemById(Guid userId, Guid productId);
     }
 }
