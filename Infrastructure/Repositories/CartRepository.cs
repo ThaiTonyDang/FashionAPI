@@ -16,6 +16,13 @@ namespace Infrastructure.Repositories
             _appDbContext = appDbContext;
         }
 
+        public Cart GetCartItemById(Guid userId, Guid productId)
+        {
+            var cartEntity = _appDbContext.CartItems.Where(c => c.ProductId == productId && c.UserId == userId)
+                                                       .FirstOrDefault();
+            return cartEntity;
+        }
+
         public List<Cart> GetCartItems(Guid userId)
         {
             var cartItems = _appDbContext.CartItems.ToList().FindAll(c => c.UserId == userId);
@@ -23,36 +30,28 @@ namespace Infrastructure.Repositories
             return cartItems;
         }
 
-        public async Task<Tuple<bool, string>> SaveCartAsyn(Cart cart)
+        public async Task<Tuple<bool, string>> SaveCartAsyn(Cart cart, bool isExists)
         {
             var message = "";
             var result = 0;
-            try
-            {
-                if (cart == null)
-                    return Tuple.Create(false, "Cart Item Null! Create Cart Fail");
+
+            if (cart == null)
+                return Tuple.Create(false, "Cart Item Null! Create Cart Fail");
                
-                var cartEntity = _appDbContext.CartItems.Where(c => c.ProductId == cart.ProductId && c.UserId == cart.UserId)
-                                                        .FirstOrDefault();
-                if(cartEntity != null)
-                {
-                    var quantity = cart.Quantity;
-                    cartEntity.Quantity = quantity + cartEntity.Quantity;
-                    _appDbContext.Update(cartEntity);
-                    result = await _appDbContext.SaveChangesAsync();
-                    return Tuple.Create(result > 0, "Save Success !");
-                }
-                var product = _appDbContext.Products.Where(p => p.Id == cart.ProductId).FirstOrDefault();
-                if (product == null) return Tuple.Create(false, "Product cannot found !");
-                await _appDbContext.CartItems.AddAsync(cart);
-                result = await _appDbContext.SaveChangesAsync();
-                message = "Save Cart Success !";
-                    return Tuple.Create(result > 0, message);
-            }
-            catch (Exception e)
+            if(isExists)
             {
-                return Tuple.Create(false, e.Message);
+                var cartEntity = GetCartItemById(cart.UserId, cart.ProductId);
+                cartEntity.Quantity = cart.Quantity;
+                _appDbContext.Update(cartEntity);
+                result = await _appDbContext.SaveChangesAsync();
+                return Tuple.Create(result > 0, "Save Success !");
             }
+
+            await _appDbContext.CartItems.AddAsync(cart);
+            result = await _appDbContext.SaveChangesAsync();
+            message = "Save Cart Success !";
+            return Tuple.Create(result > 0, message);
+            
         }
     }
 }
