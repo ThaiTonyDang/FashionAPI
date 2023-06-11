@@ -62,15 +62,17 @@ namespace API
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IOrderDetailService, OrderDetailService>();
+            services.AddScoped<ICartService, CartService>();
             services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IOrderAggregateService, OrderAggregateService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ICartRepository, CartRepository>();
 
             services.AddIdentityServices();
             services.AddIdentityTokenConfig(Configuration);
-            services.AddJwtAuthen(Configuration);
+            services.AddTokenAuthentication(Configuration);
 
             services.Configure<FileConfig>(Configuration.GetSection("FileConfig"));
 
