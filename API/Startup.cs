@@ -17,6 +17,7 @@ using System.Text.Json;
 using Infrastructure.AggregateRepository;
 using Domain.AggregateService;
 using API.ExceptionMiddleware;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace API
 {
@@ -100,6 +101,11 @@ namespace API
             }
 
             app.UseRouting();
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
             app.UseAuthentication(); 
             app.UseAuthorization();
