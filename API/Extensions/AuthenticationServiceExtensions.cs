@@ -9,25 +9,28 @@ namespace API.Extensions
 {
     public static class AuthenticationServiceExtensions
     {
-        public static void AddJwtAuthen(this IServiceCollection service, IConfiguration configuration)
+        public static void AddTokenAuthentication(this IServiceCollection service, IConfiguration configuration)
         {
-            var token = configuration.GetSection("Token")
-                                                    .Get<TokenConfig>();
-
-            service.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+            var token = configuration.GetSection("Token").Get<TokenConfig>();
+            service.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(option =>
+            {
+                option.TokenValidationParameters = new TokenValidationParameters
                 {
-                    options.Authority = token.Issuer;
-                    options.Audience = token.Audience;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(token.Secret))
-                    };
-                });
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = token.Issuer,
+                    ValidAudience = token.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(token.Secret))
+                };
+            });
         }
     }
 }

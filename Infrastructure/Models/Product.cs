@@ -16,5 +16,6 @@
         public Category Category { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
         public ICollection<SubImage> SubImages { get; set; }
+        public ICollection<Cart> CartItems { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using Domain.Dtos;
 using Domain.Services;
 using Infrastructure.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace API.Controllers
             _productService = productService;
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create(ProductDto product)
         {
@@ -79,6 +81,7 @@ namespace API.Controllers
 
         }
 
+        [Authorize]
         [HttpPut]
         public async Task<IActionResult> Update(ProductDto productDto)
         {
@@ -124,6 +127,7 @@ namespace API.Controllers
             });
         }
 
+        [Authorize]
         [HttpDelete]
         [Route("{productId}")]
         public async Task<IActionResult> Delete(string productId)
@@ -170,6 +174,7 @@ namespace API.Controllers
             });                            
         }
 
+        [Authorize]
         [HttpGet]
         [Route("{productId}")]
         public async Task<IActionResult> GetProduct(string productId)
