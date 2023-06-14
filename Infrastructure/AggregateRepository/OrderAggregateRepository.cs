@@ -91,20 +91,19 @@ namespace Infrastructure.AggregateRepository
 
         private async Task<IEnumerable<BaseInformation>> GetBasicInformation()
         {
-            var customers = await _appDbContext.Customers.ToListAsync();
+            var users = await _appDbContext.Users.ToListAsync();
             var orders = await _appDbContext.Orders.ToListAsync();
-            var orderBaseInformation = from c in customers
-                                       join o in orders on c.Id equals o.CustomerId
+            var orderBaseInformation = from u in users
                                        select new BaseInformation
                                        {
-                                           OrderId = o.Id,
-                                           CustomerName = c.Name,
-                                           Phone = c.Phone,
-                                           Email = c.Email,
-                                           OrderDate = o.OrderDate,
-                                           TotalPrice = o.TotalPrice,
-                                           ShipAddress = o.ShipAddress,
-                                           IsPaid = o.IsPaid
+                                           //OrderId = o.Id,
+                                           //CustomerName = c.Name,
+                                           //Phone = c.Phone,
+                                           //Email = c.Email,
+                                           //OrderDate = o.OrderDate,
+                                           //TotalPrice = o.TotalPrice,
+                                           //ShipAddress = o.ShipAddress,
+                                           //IsPaid = o.IsPaid
                                        }; return orderBaseInformation;
         }
     }

@@ -28,8 +28,8 @@ namespace Infrastructure.Repositories
                     throw new OrderException("Order can not be null");
                 }
 
-                if (order.CustomerId == default(Guid))
-                    return Tuple.Create(false, "Customer Id Can Not Be Null");
+                //if (order.CustomerId == default(Guid))
+                //    return Tuple.Create(false, "Customer Id Can Not Be Null");
 
                 await _appDbContext.Orders.AddAsync(order);
                 var result = await _appDbContext.SaveChangesAsync();
