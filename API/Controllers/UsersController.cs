@@ -81,17 +81,8 @@ namespace API.Controllers
             {
                 return BadRequest(new Error<string>(
                         (int)HttpStatusCode.BadRequest,
-                        "Login Failed",
+                        "Email Incorrect ! Try again",
                         "Email can not be null or empty")
-                    );
-            }
-
-            if (!user.Password.Equals(user.Password))
-            {
-                return BadRequest(new Error<string>(
-                        (int)HttpStatusCode.BadRequest,
-                        "Login Failed",
-                        "Password can not be null or empty")
                     );
             }
 
@@ -99,7 +90,7 @@ namespace API.Controllers
             if(!isValidated)
                 return Unauthorized(new Error<string>(
                         (int)HttpStatusCode.BadRequest,
-                        "Login Failed",
+                        "Username or Password are not correct",
                         "Username or Password are not correct")
                     );
 

@@ -21,7 +21,7 @@ namespace Domain.Services
 				Name = p.Name,
 				Price = p.Price,
 				Provider = p.Provider,
-                ImageName = p.MainImageName,
+                MainImageName = p.MainImageName,
                 IsEnabled = p.IsEnabled,
                 CategoryId = p.CategoryId,
                 Description = p.Description,
@@ -43,7 +43,7 @@ namespace Domain.Services
 				Name = productDto.Name,
                 Price = productDto.Price,
                 Provider = productDto.Provider,
-                MainImageName = productDto.ImageName,
+                MainImageName = productDto.MainImageName,
                 IsEnabled = productDto.IsEnabled,
                 CategoryId = productDto.CategoryId,
                 Description = productDto.Description,
@@ -57,10 +57,10 @@ namespace Domain.Services
 
 		public async Task<Tuple<bool, string>> UpdateProductAsync(ProductDto productDto)
 		{
-			var imagePath = productDto.ImageName;
-			if (!string.IsNullOrEmpty(productDto.ImageName))
+			var imagePath = productDto.MainImageName;
+			if (!string.IsNullOrEmpty(productDto.MainImageName))
 			{
-				imagePath = productDto.ImageName;
+				imagePath = productDto.MainImageName;
 			}
 			var product = new Product
 			{
@@ -120,7 +120,7 @@ namespace Domain.Services
 				Description = product.Description,
 				QuantityInStock = product.QuantityInStock,
 				IsEnabled = product.IsEnabled,
-				ImageName = product.MainImageName,
+				MainImageName = product.MainImageName,
 				ModifiedDate = product.ModifiedDate,
 				CreateDate = product.CreatedDate
 			};

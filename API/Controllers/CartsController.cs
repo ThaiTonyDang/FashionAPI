@@ -12,6 +12,7 @@ using System.Security.Claims;
 
 namespace API.Controllers
 {
+
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
@@ -24,7 +25,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetCartItems()
+        public async Task<IActionResult> GetCartItems()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!userId.IsConvertToGuid())
@@ -37,7 +38,7 @@ namespace API.Controllers
                 });
             }
 
-            var carts = _cartService.GetCartItems(new Guid(userId));
+            var carts = await _cartService.GetCartItems(new Guid(userId));
             if (carts != null)
             {
                 return Ok(new
@@ -70,7 +71,9 @@ namespace API.Controllers
                     Message = "User Id Is InValid ! "
                 });
             }
-            var result = await _cartService.SaveCartAsyn(cartItemDto, new Guid(userId));
+
+            cartItemDto.UserId = new Guid(userId);
+            var result = await _cartService.SaveCartAsyn(cartItemDto);
             var isSuccess = result.Item1;
             var message = result.Item2;
             if (isSuccess)
@@ -88,6 +91,62 @@ namespace API.Controllers
                 StatusCode = (int)HttpStatusCode.BadRequest,
                 IsSuccess = true,
                 Message = message,
+            });
+        }
+
+        [HttpDelete]
+        [Route("{productId}")]
+        public async Task<IActionResult> DeleteCartItem(string productId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!userId.IsConvertToGuid() || !productId.IsConvertToGuid())
+            {
+                return BadRequest(new
+                {
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    IsSuccess = false,
+                    Message = "User and Product Id Is InValid ! "
+                });
+            }
+            var result = await _cartService.DeleteCartItemAsync( new Guid(userId), new Guid(productId));
+            var isSuccess = result.Item1;
+            var message = result.Item2;
+            if (isSuccess)
+            {
+                return Ok(new
+                {
+                    StatusCode = (int)HttpStatusCode.NoContent,
+                    IsSuccess = true,
+                    Message = message,
+                });
+            }
+            return BadRequest(new
+            {
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                IsSuccess = false,
+                Message = message,
+            });
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update(CartItemDto cartItemDto)
+        {
+            var isSuccess = await _cartService.UpdateQuantityCartItem(cartItemDto);
+            if (isSuccess)
+            {
+                return Ok(new
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    IsSuccess = true,
+                    Message = "Quantity has been updated",
+                });
+            }
+
+            return BadRequest(new
+            {
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                IsSuccess = false,
+                Message = "Quantity updated fail !",
             });
         }
     }
