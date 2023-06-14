@@ -9,6 +9,7 @@ namespace Domain.Dtos
 {
     public class CartItemDto
     {
+        public Guid UserId { get; set; }
         public int Quantity { set; get; }
         public Guid ProductId { get; set; }
     }

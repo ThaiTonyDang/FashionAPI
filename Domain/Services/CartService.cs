@@ -1,4 +1,5 @@
 ﻿using Domain.Dtos;
+using Domain.ViewModel;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
 using System;
@@ -17,6 +18,15 @@ namespace Domain.Services
             _cartRepository = cartRepository;
         }
 
+        public async Task<Tuple<bool, string>> DeleteCartItemAsync(Guid userId, Guid productId)
+        {
+            var result = await _cartRepository.DeleteCartItemAsync(userId, productId);
+            var isSuccess = result.Item1;
+            var message = result.Item2;
+
+            return Tuple.Create(isSuccess, message);
+        }
+
         public CartItemDto GetCartItemById(Guid userId, Guid productId)
         {
             var carto = _cartRepository.GetCartItemById(userId, productId);
@@ -29,39 +39,54 @@ namespace Domain.Services
             return cartDto;
         }
 
-        public List<CartItemDto> GetCartItems(Guid userId)
+        public async Task<List<CartItemViewModel>> GetCartItems(Guid userId)
         {
-            var carts = _cartRepository.GetCartItems(userId).Select(c => new CartItemDto
+            var carts = await _cartRepository.GetCartItemsAsync(userId);
+            var cartDto = carts.Select(c => new CartItemViewModel
             {
-                Quantity = c.Quantity,
                 ProductId = c.ProductId,
-            }).ToList();
+                Quantity = c.Quantity,
+                UserId = c.UserId,
+                Product = new ProductDto
+                {
+                    Name = c.Product.Name,
+                    Price = c.Product.Price,
+                    CategoryId = c.Product.CategoryId,
+                    ModifiedDate = c.Product.ModifiedDate,
+                    MainImageName = c.Product.MainImageName,
+                    Provider = c.Product.Provider,
+                    Description = c.Product.Description
 
-            return carts;
+                }
+            }).ToList();
+            return cartDto;
         }
 
-        public async Task<Tuple<bool, string>> SaveCartAsyn(CartItemDto cartDto, Guid userId)
+        public async Task<Tuple<bool, string>> SaveCartAsyn(CartItemDto cartDto)
         {
-            var isExists = false;
             var cartItem = new Cart()
             {
                 Quantity = cartDto.Quantity,
                 ProductId = cartDto.ProductId,
-                UserId = userId
+                UserId = cartDto.UserId
             };
 
-            var cartEntity = _cartRepository.GetCartItemById(userId, cartDto.ProductId);
-            if (cartEntity != null)
-            {
-                isExists = true;
-                var quantity = cartDto.Quantity;
-                cartItem.Quantity = quantity + cartEntity.Quantity;
-            }
-
-            var result = await _cartRepository.SaveCartAsyn(cartItem, isExists);
+            var result = await _cartRepository.SaveCartAsyn(cartItem);
             var isSuccess = result.Item1;
             var message = result.Item2;
             return Tuple.Create(isSuccess, message);
-        }      
+        }
+
+        public async Task<bool> UpdateQuantityCartItem(CartItemDto cartDto)
+        {
+            var cart = new Cart
+            {
+                ProductId = cartDto.ProductId,
+                UserId = cartDto.UserId,
+                Quantity = cartDto.Quantity         
+            };
+            var result = await _cartRepository.UpdateQuantityCartItem(cart);
+            return result;
+        }
     }
 }

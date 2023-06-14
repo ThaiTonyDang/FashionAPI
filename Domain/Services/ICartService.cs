@@ -1,4 +1,5 @@
 ﻿using Domain.Dtos;
+using Domain.ViewModel;
 using Infrastructure.Models;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,10 @@ namespace Domain.Services
 {
     public interface ICartService
     {
-        public Task<Tuple<bool, string>> SaveCartAsyn(CartItemDto cartDto, Guid userId);
-        public List<CartItemDto> GetCartItems(Guid userId);
+        public Task<Tuple<bool, string>> SaveCartAsyn(CartItemDto cartDto);
+        public Task<List<CartItemViewModel>> GetCartItems(Guid userId);
         public CartItemDto GetCartItemById(Guid userId, Guid productId);
+        public Task<Tuple<bool, string>> DeleteCartItemAsync(Guid userId, Guid productId);
+        public Task<bool> UpdateQuantityCartItem(CartItemDto cartDto);
     }
 }

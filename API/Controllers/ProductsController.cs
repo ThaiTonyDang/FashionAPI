@@ -22,7 +22,6 @@ namespace API.Controllers
             _productService = productService;
         }
 
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create(ProductDto product)
         {
@@ -81,7 +80,6 @@ namespace API.Controllers
 
         }
 
-        [Authorize]
         [HttpPut]
         public async Task<IActionResult> Update(ProductDto productDto)
         {
@@ -174,7 +172,6 @@ namespace API.Controllers
             });                            
         }
 
-        [Authorize]
         [HttpGet]
         [Route("{productId}")]
         public async Task<IActionResult> GetProduct(string productId)
@@ -185,7 +182,7 @@ namespace API.Controllers
                 {
                     StatusCode = (int)HttpStatusCode.BadRequest,
                     IsSuccess = false,
-                    Message = "Product Id Is InValid ! Delete Failed !"
+                    Message = "Product Id Is InValid !"
                 });
             }
             var result = await _productService.GetProductDtoByIdAsync(new Guid(productId));
