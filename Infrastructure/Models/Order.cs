@@ -16,5 +16,7 @@ namespace Infrastructure.Models
         public bool Status { get; set; }
         public bool IsPaid { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
+        public Guid UserId { get; set; }
+        public User User { get; set; }
     }
 }
