@@ -15,6 +15,6 @@ namespace Domain.DTO
         public bool Status { get; set; }
         public bool IsPaid { get; set; }
         public decimal TotalPrice { get; set; }
-        public Guid CustomerId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

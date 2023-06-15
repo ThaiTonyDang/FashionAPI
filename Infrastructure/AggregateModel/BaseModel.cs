@@ -1,6 +1,6 @@
 ﻿namespace Infrastructure.AggregateModel
 {
-    public class BaseInformation
+    public class BaseModel
     {
         public Guid OrderId { get; set; }
         public string CustomerName { get; set; }

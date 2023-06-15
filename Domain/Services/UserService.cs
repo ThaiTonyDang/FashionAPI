@@ -73,6 +73,8 @@ namespace Domain.Services
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("firstName", user.FirstName),
                 new Claim("lastName", user.LastName),
+                new Claim(ClaimTypes.MobilePhone, user.PhoneNumber),
+                new Claim(ClaimTypes.StreetAddress, user.Address),
             };
 
             var roles = await this._userRepository.GetListRoles(user);
@@ -95,6 +97,17 @@ namespace Domain.Services
                 signingCredentials: signingCredentials);
                         
             return tokenOptions;
+        }
+
+        public Task<bool> UpdateUserAddressAsync(UserDto userDto)
+        {
+            var user = new User
+            {
+                Id = userDto.Id,
+                Address = userDto.Address
+            };
+            var result = _userRepository.UpdateUserAddressAsync(user);
+            return result;
         }
     }
 }

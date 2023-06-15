@@ -31,6 +31,15 @@ namespace Infrastructure.Repositories
             return this._userManager.FindByEmailAsync(email);
         }
 
+        public async Task<bool> UpdateUserAddressAsync(User user)
+        {
+            var userEntity = await _userManager.FindByIdAsync(user.Id.ToString());
+            userEntity.Address = user.Address;
+            var result = await _userManager.UpdateAsync(userEntity);
+            return result.Succeeded;
+
+        }
+
         public async Task<bool> ValidationUser(User user, string password)
         {
             var existedUser = await GetUserByEmail(user.Email);

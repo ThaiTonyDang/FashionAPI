@@ -3,8 +3,11 @@ using Domain.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Utilities.GlobalHelpers;
 
 namespace API.Controllers
 {
@@ -20,6 +23,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Route("ordercreate")]
         public async Task<IActionResult> Create(OrderDto orderDto)
         {
             var message = "";
@@ -32,7 +36,18 @@ namespace API.Controllers
                     Message = "The order to create is not available!"
                 });
             }
-            var result = await _orderService.CreateOrder(orderDto);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!userId.IsConvertToGuid())
+            {
+                return BadRequest(new
+                {
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    IsSuccess = false,
+                    Message = "User Id Invalid!"
+                });
+            }    
+            orderDto.UserId = new Guid(userId);
+            var result = await _orderService.CreateOrderAsync(orderDto);
             var isSuccess = result.Item1;
             message = result.Item2;
             if (isSuccess)
@@ -48,6 +63,147 @@ namespace API.Controllers
                 StatusCode = (int)HttpStatusCode.BadRequest,
                 IsSuccess = false,
                 Message = $"{message}",
+            });
+        }
+
+        [HttpPost]
+        [Route("detailcreate")]
+        public async Task<IActionResult> Create(OrderDetailDto orderDetailDto)
+        {
+            var message = "";
+
+
+            var result = await _orderService.CreateOrderDetailAsync(orderDetailDto);
+            var isSuccess = result.Item1;
+            message = result.Item2;
+            if (isSuccess)
+                return Ok(new
+                {
+                    StatusCode = (int)HttpStatusCode.Created,
+                    IsSuccess = true,
+                    Message = $"{message}"
+                });
+
+            return BadRequest(new
+            {
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                IsSuccess = false,
+                Message = $"{message}",
+            });
+        }
+
+        [HttpGet]
+        [Route("orders")]
+        public async Task<IActionResult> GetListOrder()
+        {
+            var orders = await _orderService.GetAggregatedOrderListAsync();
+            if (orders.Count == 0)
+            {
+                return Ok(new
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    IsSuccess = false,
+                    Message = "Not Orders Yet !",
+                    Data = orders,
+                });
+            }
+            return Ok(new
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+                IsSuccess = true,
+                Message = "Get list success",
+                Data = orders,
+            });
+        }
+
+        [HttpGet]
+        [Route("orderdetails")]
+        public async Task<IActionResult> GetOrderDetailList()
+        {
+            var orderdetails = await _orderService.GetAggregatedOrderDetailListAsync();
+            if (orderdetails.Count == 0)
+            {
+                return Ok(new
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    IsSuccess = false,
+                    Message = "Not Orders Yet !",
+                });
+            }
+            return Ok(new
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+                IsSuccess = true,
+                Message = "Get list success",
+                Data = orderdetails,
+            });
+        }
+
+        [HttpGet]
+        [Route("products/{orderId}")]
+        public async Task<IActionResult> GetOrderedProduct(string orderId)
+        {
+            if (!orderId.IsConvertToGuid())
+            {
+                return BadRequest(new
+                {
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    IsSuccess = false,
+                    Message = "Order Id Is InValid !"
+                });
+            }
+            var result = await _orderService.GetOrderedProductListAsync(new Guid(orderId));
+            var products = result.Item1;
+            var message = result.Item2;
+            if (products == null)
+            {
+                return NotFound(new
+                {
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    IsSuccess = false,
+                    Message = message,
+                });
+            }
+            return Ok(new
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+                IsSuccess = true,
+                Message = message,
+                Data = products,
+            });
+        }
+
+        [HttpGet]
+        [Route("customers/{orderId}")]
+        public async Task<IActionResult> GetOrderedBaseInformation(string orderId)
+        {
+            if (!orderId.IsConvertToGuid())
+            {
+                return BadRequest(new
+                {
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    IsSuccess = false,
+                    Message = "Order Id Is InValid !"
+                });
+            }
+            var result = await _orderService.GetOrderedBaseInformationAsync(new Guid(orderId));
+            var baseInformation = result.Item1;
+            var message = result.Item2;
+            if (baseInformation == null)
+            {
+                return NotFound(new
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    IsSuccess = false,
+                    Message = message,
+                });
+            }
+            return Ok(new
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+                IsSuccess = true,
+                Message = message,
+                Data = baseInformation,
             });
         }
     }
