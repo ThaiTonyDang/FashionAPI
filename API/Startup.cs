@@ -14,8 +14,6 @@ using Microsoft.OpenApi.Models;
 using System.IO;
 using System.Text.Json.Serialization;
 using System.Text.Json;
-using Infrastructure.AggregateRepository;
-using Domain.AggregateService;
 using API.ExceptionMiddleware;
 using Microsoft.AspNetCore.HttpOverrides;
 
@@ -55,17 +53,13 @@ namespace API
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
-            services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
-            services.AddScoped<IOrderAggregateRepository, OrderAggregateRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IOrderService, OrderService>();
-            services.AddScoped<IOrderDetailService, OrderDetailService>();
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IOrderAggregateService, OrderAggregateService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICartRepository, CartRepository>();
 
