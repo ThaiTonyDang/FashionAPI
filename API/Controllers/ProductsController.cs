@@ -22,37 +22,37 @@ namespace API.Controllers
             _productService = productService;
         }
 
+        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Create(ProductDto product)
+        public async Task<IActionResult> Create(ProductDto productDto)
         {
-            var message = "";
-            if (product == null)
+            if (productDto == null)
             {
-                return NotFound(new Error<string>(
-                        (int)HttpStatusCode.NotFound,
-                        "Create Failed",
+                return BadRequest(
+                    new Error<string>(
+                        (int)HttpStatusCode.BadRequest,
+                        "Create product failed",
                         "Product can not be null")
                     );
             }
-            product.CreateDate = DateTime.Now;
-            var result = await _productService.CreateProductAsync(product);
-            var isSuccess = result.Item1;
-            message = result.Item2;
-            if (isSuccess)
-            return Ok(new
-            {
-                StatusCode = (int)HttpStatusCode.Created,
-                IsSuccess = true,
-                Message = $"{message}",
-                Data = product
-            });
 
-            return BadRequest(new
+            var result = await _productService.CreateProductAsync(productDto);
+            if (!result.IsSuccess)
             {
-                StatusCode = HttpStatusCode.BadRequest,
-                IsSuccess = false,
-                Message = $"{message}",
-            });         
+                return StatusCode(
+                    (int)HttpStatusCode.InternalServerError, 
+                    new Error<string>(
+                        (int)HttpStatusCode.InternalServerError,
+                        "Create product failed",
+                        result.Message)
+                );
+            }
+
+            return StatusCode((int)HttpStatusCode.Created, 
+                new Success(
+                    (int)HttpStatusCode.Created,
+                    result.Message)
+            );        
         }
 
         [HttpGet]
