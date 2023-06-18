@@ -1,4 +1,5 @@
 ﻿using Domain.Dtos;
+using Infrastructure.Dtos;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
 
@@ -31,15 +32,14 @@ namespace Domain.Services
 			return listProducts;
 		}
 
-		public async Task<Tuple<bool, string>> CreateProductAsync(ProductDto productDto)
+		public async Task<Result> CreateProductAsync(ProductDto productDto)
 		{
 			if (productDto == null || productDto?.Price == null)
-				return Tuple.Create(false, "The Product To Be Created Doesn't Exist Or Price Value Is Invalid");
+				return new ErrorResult("The Product to be created doesn't exist or price value is invalid");
 
-			productDto.Id = Guid.NewGuid();
 			var product = new Product()
 			{
-				Id = productDto.Id,
+				Id = Guid.NewGuid(),
 				Name = productDto.Name,
                 Price = productDto.Price,
                 Provider = productDto.Provider,
@@ -47,7 +47,7 @@ namespace Domain.Services
                 IsEnabled = productDto.IsEnabled,
                 CategoryId = productDto.CategoryId,
                 Description = productDto.Description,
-				CreatedDate = productDto.CreateDate,
+				CreatedDate = DateTime.UtcNow,
 				QuantityInStock = productDto.QuantityInStock,
 			};
 

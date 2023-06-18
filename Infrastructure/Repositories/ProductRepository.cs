@@ -1,4 +1,5 @@
 ﻿using Infrastructure.DataContext;
+using Infrastructure.Dtos;
 using Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,36 +19,34 @@ namespace Infrastructure.Repositories
             _appDbContext = appDbContext;
         }
 
-        public async Task<Tuple<bool, string>> CreateAsync(Product product)
+        public async Task<Result> CreateAsync(Product product)
         {
-            try
+            if (product == null)
+                throw new ProductException("Product can not be null");
+
+            if (product.Id == default || product.CategoryId == default)
             {
-                if (product == null)
-                {
-                    throw new ProductException("Product can not be null");              
-                }
-
-                if (product.Id == default(Guid) || product.CategoryId == default(Guid))
-                   return Tuple.Create(false, "Product And Category Id Is Invalid");
-
-                var productEntity = _appDbContext.Products
-                                                 .Where(p => p.Name.ToLower() == product.Name.ToLower()
-                                                  && p.Provider.ToLower() == product.Provider.ToLower())
-                                                 .FirstOrDefault();
-                if (productEntity != null)
-                {
-                    return Tuple.Create(false, "Product Name And Product Provider Already Exist! Created Fail !");
-                }
-                
-                await _appDbContext.Products.AddAsync(product);
-                var result = await _appDbContext.SaveChangesAsync();
-                return Tuple.Create(result > 0, "Created Product Success !");
-
+                return new ErrorResult("Product and category id is invalid");
             }
-            catch (Exception exception)
+
+            var productEntity = _appDbContext.Products
+                                             .Where(p => 
+                                                  p.Name.ToLower() == product.Name.ToLower() &&
+                                                  p.Provider.ToLower() == product.Provider.ToLower()
+                                              ).FirstOrDefault();
+
+            if (productEntity != null)
+                return new ErrorResult("Product name and product provider already exist!");
+
+            await _appDbContext.Products.AddAsync(product);
+            var result = await _appDbContext.SaveChangesAsync();
+
+            if(result < 0)
             {
-                return Tuple.Create(false, $"An Error Occurred : {exception.Message} ! Created Fail !");
-            }                 
+                return new ErrorResult("Create new product failed!");
+            }
+
+            return new SuccessResult("Created product successfuly");
         }
 
         public async Task<List<Product>> GetListProductsAsync()
