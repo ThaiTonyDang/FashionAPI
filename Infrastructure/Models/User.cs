@@ -14,5 +14,6 @@ namespace Infrastructure.Models
         public virtual ICollection<UserRole> UserRoles { get; set; }
         public ICollection<Cart> CartItems { get; set; }
         public ICollection<Order> Orders { get; set; }
+        public string AvatarImage { get; set; }
     }
 }

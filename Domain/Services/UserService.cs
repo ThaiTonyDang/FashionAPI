@@ -1,10 +1,12 @@
 ﻿using Domain.Dtos;
+using Infrastructure.AggregateModel;
 using Infrastructure.Config;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Text;
 
@@ -73,8 +75,13 @@ namespace Domain.Services
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("firstName", user.FirstName),
                 new Claim("lastName", user.LastName),
+                new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth.ToShortDateString()),
             };
 
+            if (user.AvatarImage != null)
+            {
+                claims.Add(new Claim("avatar", user.AvatarImage));
+            }
             if (user.PhoneNumber != null)
             {
                 claims.Add(new Claim(ClaimTypes.MobilePhone, user.PhoneNumber));
@@ -105,14 +112,61 @@ namespace Domain.Services
             return tokenOptions;
         }
 
-        public Task<bool> UpdateUserAddressAsync(UserDto userDto)
+        public async Task<bool> UpdateUserAsync(UserDto userDto)
         {
             var user = new User
             {
-                Id = userDto.Id,
-                Address = userDto.Address
+                Address = userDto.Address,
+                PhoneNumber = userDto.PhoneNumber,
+                LastName = userDto.LastName,
+                FirstName = userDto.FirstName,
+                Email = userDto.Email,
+                DateOfBirth = userDto.Birthday
             };
-            var result = _userRepository.UpdateUserAddressAsync(user);
+            var result = await _userRepository.UpdateUserAsync(user);
+            if(result) return true ;
+            return false;
+        }
+
+        public async Task<bool> UpdateUserAvatarAsync(UserDto userDto, string email)
+        {
+            var user = new User
+            {
+                Email = email,
+                AvatarImage = userDto.AvatarImage,
+            };
+
+            var result = await _userRepository.UpdateUserAvatarAsync(user);
+            if (result) return true;
+            return false;
+        }
+
+        public async Task<UserDto> GetUserByEmail(string email)
+        {
+            var user = await _userRepository.GetUserByEmail(email);
+            var userDto = new UserDto
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                AvatarImage = user.AvatarImage,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Address = user.Address,
+                Birthday = user.DateOfBirth
+            };
+
+            return userDto;
+        }
+
+        public async Task<bool> ChangeUserPasswordAsync(PasswordModelDto passwordModelDto, string email)
+        {
+            var passModel = new PasswordModel
+            {
+                CurrentPassword = passwordModelDto.CurrentPassword,
+                ConfirmPassword = passwordModelDto.ConfirmPassword,
+                NewPassword = passwordModelDto.NewPassword
+            };
+            var result = await _userRepository.ChangeUserPasswordAsync(passModel, email);
             return result;
         }
     }
