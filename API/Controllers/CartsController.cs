@@ -95,7 +95,7 @@ namespace API.Controllers
         }
 
         [HttpDelete]
-        [Route("{productId}")]
+        [Route("delete-item/{productId}")]
         public async Task<IActionResult> DeleteCartItem(string productId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -147,6 +147,38 @@ namespace API.Controllers
                 StatusCode = (int)HttpStatusCode.BadRequest,
                 IsSuccess = false,
                 Message = "Quantity updated fail !",
+            });
+        }
+
+        [HttpDelete]
+        [Route("delete")]
+        public async Task<IActionResult> DeleteAllCartByUser()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!userId.IsConvertToGuid())
+            {
+                return BadRequest(new
+                {
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    IsSuccess = false,
+                    Message = "User Id Is InValid ! "
+                });
+            }
+            var isSuccess = await _cartService.DeleteAllCartAsyn(new Guid(userId));
+            if (isSuccess)
+            {
+                return Ok(new
+                {
+                    StatusCode = (int)HttpStatusCode.NoContent,
+                    IsSuccess = true,
+                    Message = "Deleted Success",
+                });
+            }
+            return BadRequest(new
+            {
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                IsSuccess = false,
+                Message = "Deleted Fail !"
             });
         }
     }

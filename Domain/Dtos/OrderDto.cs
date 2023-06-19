@@ -16,5 +16,7 @@ namespace Domain.DTO
         public bool IsPaid { get; set; }
         public decimal TotalPrice { get; set; }
         public Guid UserId { get; set; }
+        public ICollection<OrderDetailDto> OrderDetails { get; set; }
+
     }
 }

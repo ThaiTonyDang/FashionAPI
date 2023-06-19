@@ -16,5 +16,6 @@ namespace Domain.Services
         public CartItemDto GetCartItemById(Guid userId, Guid productId);
         public Task<Tuple<bool, string>> DeleteCartItemAsync(Guid userId, Guid productId);
         public Task<bool> UpdateQuantityCartItem(CartItemDto cartDto);
+        public Task<bool> DeleteAllCartAsyn(Guid userId);
     }
 }

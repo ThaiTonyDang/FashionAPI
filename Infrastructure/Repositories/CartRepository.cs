@@ -16,6 +16,15 @@ namespace Infrastructure.Repositories
             _appDbContext = appDbContext;
         }
 
+        public async Task<bool> DeleteAllCart(Guid userId)
+        {
+            var cart = await GetCartItemsAsync(userId);
+            _appDbContext.CartItems.RemoveRange(cart);
+            var result = await _appDbContext.SaveChangesAsync();
+            if (result > 0) return true;
+            return false;
+        }
+
         public async Task<Tuple<bool, string>> DeleteCartItemAsync(Guid userId, Guid productId)
         {
             var cartItem = GetCartItemById(userId, productId);

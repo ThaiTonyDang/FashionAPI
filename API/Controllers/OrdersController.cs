@@ -29,51 +29,15 @@ namespace API.Controllers
             var message = "";
             if (orderDto == null)
             {
-                return NotFound(new
+                return BadRequest(new
                 {
                     StatusCode = (int)HttpStatusCode.NotFound,
                     IsSuccess = false,
                     Message = "The order to create is not available!"
                 });
             }
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!userId.IsConvertToGuid())
-            {
-                return BadRequest(new
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    IsSuccess = false,
-                    Message = "User Id Invalid!"
-                });
-            }    
-            orderDto.UserId = new Guid(userId);
+
             var result = await _orderService.CreateOrderAsync(orderDto);
-            var isSuccess = result.Item1;
-            message = result.Item2;
-            if (isSuccess)
-                return Ok(new
-                {
-                    StatusCode = (int)HttpStatusCode.Created,
-                    IsSuccess = true,
-                    Message = $"{message}"
-                });
-
-            return BadRequest(new
-            {
-                StatusCode = (int)HttpStatusCode.BadRequest,
-                IsSuccess = false,
-                Message = $"{message}",
-            });
-        }
-
-        [HttpPost]
-        [Route("detailcreate")]
-        public async Task<IActionResult> Create(OrderDetailDto orderDetailDto)
-        {
-            var message = "";
-
-
-            var result = await _orderService.CreateOrderDetailAsync(orderDetailDto);
             var isSuccess = result.Item1;
             message = result.Item2;
             if (isSuccess)
