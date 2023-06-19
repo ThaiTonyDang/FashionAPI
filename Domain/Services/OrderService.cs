@@ -25,6 +25,14 @@ namespace Domain.Services
             if (orderDto == null)
                 return Tuple.Create(false, "The Order To Be Created Doesn't Exist");
 
+            var orderDetails = orderDto.OrderDetails.Select(o => new OrderDetail
+            {
+                OrderId = o.OrderId,
+                ProductId = o.ProductId,
+                Discount = o.Discount,
+                Price = o.Price,
+                Quantity = o.Quantity
+            }).ToList();
             var order = new Order()
             {
                 Id = orderDto.Id,
@@ -34,8 +42,9 @@ namespace Domain.Services
                 Status = orderDto.Status,
                 IsPaid = orderDto.IsPaid,
                 TotalPrice = orderDto.TotalPrice,
-                UserId = orderDto.UserId
-        };
+                UserId = orderDto.UserId,
+                OrderDetails = orderDetails
+            };
 
             var result = await _orderRepository.CreateOrderAsync(order);
             return result;

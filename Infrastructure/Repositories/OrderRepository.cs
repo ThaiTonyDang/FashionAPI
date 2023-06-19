@@ -30,15 +30,28 @@ namespace Infrastructure.Repositories
                     throw new OrderException("Order can not be null");
                 }
 
-                await _appDbContext.Orders.AddAsync(order);
-                var result = await _appDbContext.SaveChangesAsync();
-                return Tuple.Create(result > 0, "Created Order Success !");
+                var result = await CreateOrdersAsync(order);
+
+                return Tuple.Create(result , "Created Order Success !");
 
             }
             catch (Exception exception)
             {
                 return Tuple.Create(false, $"An Error Occurred : {exception.Message}");
             }
+        }
+
+        private async Task<bool> CreateOrdersAsync(Order order)
+        {
+            var orderdetails = order.OrderDetails.ToList();
+            await _appDbContext.Orders.AddAsync(order);
+            var result = await _appDbContext.SaveChangesAsync();
+            if (result > 0)
+            {              
+                return true;
+            }
+
+            return false;          
         }
 
         public async Task<List<OrderAggregate>> GettAggregatedOrderListAsync()

@@ -18,6 +18,12 @@ namespace Domain.Services
             _cartRepository = cartRepository;
         }
 
+        public async Task<bool> DeleteAllCartAsyn(Guid userId)
+        {
+            var result = await _cartRepository.DeleteAllCart(userId);
+            return result;
+        }
+
         public async Task<Tuple<bool, string>> DeleteCartItemAsync(Guid userId, Guid productId)
         {
             var result = await _cartRepository.DeleteCartItemAsync(userId, productId);
