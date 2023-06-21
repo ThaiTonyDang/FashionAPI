@@ -62,9 +62,6 @@ namespace API.Controllers
             
             return Ok(new
             {
-                StatusCode = (int)HttpStatusCode.Created,
-                IsSuccess = true,
-                Message = "Created File Or Image Success !",
                 Data = dataList
             });
 

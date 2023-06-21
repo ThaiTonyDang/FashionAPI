@@ -1,5 +1,7 @@
-﻿using Infrastructure.Models;
+﻿using Infrastructure.AggregateModel;
+using Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Net.WebSockets;
 
 namespace Infrastructure.Repositories
 {
@@ -11,6 +13,13 @@ namespace Infrastructure.Repositories
         {
             _userManager = userManager;
             _roleManager = roleManager;
+        }
+
+        public async Task<bool> ChangeUserPasswordAsync(PasswordModel passwordModel, string email)
+        {
+            var user = await GetUserByEmail(email);
+            var result = await _userManager.ChangePasswordAsync(user, passwordModel.CurrentPassword, passwordModel.NewPassword);
+            return result.Succeeded;
         }
 
         public async Task<bool> CreateUserAsync(User user, string password)
@@ -31,13 +40,25 @@ namespace Infrastructure.Repositories
             return this._userManager.FindByEmailAsync(email);
         }
 
-        public async Task<bool> UpdateUserAddressAsync(User user)
+        public async Task<bool> UpdateUserAsync(User user)
         {
-            var userEntity = await _userManager.FindByIdAsync(user.Id.ToString());
+            var userEntity = await _userManager.FindByEmailAsync(user.Email);
             userEntity.Address = user.Address;
+            userEntity.PhoneNumber = user.PhoneNumber;
+            userEntity.LastName = user.LastName;
+            userEntity.FirstName = user.FirstName;
+            userEntity.DateOfBirth = user.DateOfBirth;
             var result = await _userManager.UpdateAsync(userEntity);
             return result.Succeeded;
 
+        }
+
+        public async Task<bool> UpdateUserAvatarAsync(User user)
+        {
+            var userEntity = await GetUserByEmail(user.Email);
+            userEntity.AvatarImage = user.AvatarImage;
+            var result = await _userManager.UpdateAsync(userEntity);
+            return result.Succeeded;
         }
 
         public async Task<bool> ValidationUser(User user, string password)

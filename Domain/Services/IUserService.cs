@@ -1,4 +1,5 @@
 ﻿using Domain.Dtos;
+using Infrastructure.Models;
 
 namespace Domain.Services
 {
@@ -7,6 +8,9 @@ namespace Domain.Services
         Task<bool> RegisterUserAsync(UserRegistrationDto user);
         Task<bool> ValidateUserAsync(UserDto user);
         Task<string> CreateTokenAsync(UserDto user);
-        public Task<bool> UpdateUserAddressAsync(UserDto userDto);
+        public Task<bool> UpdateUserAsync(UserDto userDto);
+        public Task<bool> UpdateUserAvatarAsync(UserDto userDto, string email);
+        public Task<UserDto> GetUserByEmail(string email);
+        Task<bool> ChangeUserPasswordAsync(PasswordModelDto passwordModelDto, string password);
     }
 }
