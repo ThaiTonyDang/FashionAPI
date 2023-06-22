@@ -170,7 +170,7 @@ namespace API.Controllers
 
         [Authorize]
         [HttpGet]
-        [Route("user")]
+        [Route("single-user")]
         public async Task<IActionResult> GetUser()
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
