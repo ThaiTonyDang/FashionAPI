@@ -1,6 +1,7 @@
 
 using Domain.Dtos;
 using Domain.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using Utilities.GlobalHelpers;
 
 namespace API.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -44,6 +46,7 @@ namespace API.Controllers
 
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create(CategoryDto categoryDto)
         {
@@ -63,7 +66,7 @@ namespace API.Controllers
             if (isSuccess)
                 return Ok(new
                 {
-                    StatusCode = HttpStatusCode.Created,
+                    StatusCode = (int)HttpStatusCode.Created,
                     IsSuccess = true,
                     Messenger = $"{message}",
                     Data = categoryDto
@@ -76,6 +79,7 @@ namespace API.Controllers
             });
         }
 
+        [Authorize]
         [HttpPut]
         public async Task<IActionResult> Update(CategoryDto categoryDto)
         {
@@ -123,6 +127,7 @@ namespace API.Controllers
             });
         }
 
+        [Authorize]
         [HttpDelete]
         [Route("{categoryId}")]
         public async Task<IActionResult> Delete(string categoryId)
@@ -204,6 +209,29 @@ namespace API.Controllers
                 IsSuccess = false,
                 Message = $"{message}"
             });
+        }
+
+        [HttpGet]
+        [Route("products/{categoryCode}")]
+        public async Task<IActionResult> GetProducts(int categoryCode)
+        {
+            var products = await _categotyService.GetProductsByName(categoryCode);
+            if (products == null)
+                return BadRequest(new
+                {
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    IsSuccess = false,
+                    Message = "Product list cannot found"
+                });
+
+            return Ok(new
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+                IsSuccess = true,
+                Message = "Get List Success",
+                Data = products
+            });
+
         }
     }
 }

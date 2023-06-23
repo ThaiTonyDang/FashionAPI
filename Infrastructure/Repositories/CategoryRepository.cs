@@ -1,6 +1,7 @@
 ﻿ using Infrastructure.DataContext;
 using Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.Repositories
 {
@@ -122,6 +123,19 @@ namespace Infrastructure.Repositories
             {
                 return Tuple.Create(default(Category), $"{exception.Message} ");
             }
+        }
+
+        public async Task<List<Product>> GetProductsByName(string categoryName)
+        {
+            var category =  _appDbContext.Categories.Where(c => c.Name.ToLower().Equals(categoryName.ToLower())).FirstOrDefault();
+            if (category == null)
+            {
+                return await Task.Run(() => default(List<Product>));
+            }    
+            var e = _appDbContext.Entry(category);
+            e.Collection(c => c.Products).Load();
+            var products = category.Products.ToList();
+            return await Task.Run(() => products);
         }
     }
 }

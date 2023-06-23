@@ -1,6 +1,7 @@
 ﻿using Domain.Dtos;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
+using Utilities.GlobalHelpers;
 
 namespace Domain.Services
 {
@@ -108,6 +109,42 @@ namespace Domain.Services
             };
 
             return Tuple.Create(categoryDto, message);
+        }
+
+        public async Task<List<ProductDto>> GetProductsByName(int categoryCode)
+        {
+            var categoryName = GetCategoryNameByCode(categoryCode);
+            var products = await _categoryRepository.GetProductsByName(categoryName);
+            if (products == null)
+            {
+                return null;
+            }    
+            var productDto = products.Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
+                Provider = p.Provider,
+                CategoryId = p.CategoryId,
+                Description = p.Description,
+                QuantityInStock = p.QuantityInStock,
+                MainImageName = p.MainImageName,
+            }).ToList();
+
+            return productDto;
+        }
+
+        private string GetCategoryNameByCode(int categoryCode)
+        {
+            switch (categoryCode)
+            {
+                case ((int)CATEGORY_CODE.MEN):
+                    return CATEGORY.MEN_FASHION;
+                case ((int)CATEGORY_CODE.WOMEN):
+                    return CATEGORY.WOMEN_FASHION;
+                default:
+                    return CATEGORY.KID_FASHION;
+            }
         }
     }
 }
