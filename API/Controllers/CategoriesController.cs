@@ -25,7 +25,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetList()
         {
-            var categories = await _categotyService.GetListCategoryAsync();
+            var categories = await _categotyService.GetCategoryListAsync();
             if (categories != null)
             {
                 return Ok(new
@@ -68,14 +68,14 @@ namespace API.Controllers
                 {
                     StatusCode = (int)HttpStatusCode.Created,
                     IsSuccess = true,
-                    Messenger = $"{message}",
+                    Message = $"{message}",
                     Data = categoryDto
                 });
             return BadRequest(new
             {
                 StatusCode = (int)HttpStatusCode.BadRequest,
                 IsSuccess = false,
-                Messenger = $"{message}"
+                Message = $"{message}"
             });
         }
 
@@ -141,8 +141,8 @@ namespace API.Controllers
                     IsSuccess = false,
                     Messenger = "Category Id Is Invalid ! Delete Failed !"
                 });
-            var tuple = _categotyService.GetCategoryByIdAsync(new Guid(categoryId));
-            var categoryObject = tuple.Result.Item1;
+            var result = await _categotyService.GetCategoryByIdAsync(new Guid(categoryId));
+            var categoryObject = result.Item1;
             if (categoryObject == null)
             {
                 return NotFound(new
@@ -152,9 +152,9 @@ namespace API.Controllers
                     Message = $"Category not found ! Delete Fail !",
                 });
             }
-            var result = await _categotyService.DeleteCategoryAsync(new Guid(categoryId));
-            var isSuccess = result.Item1;
-            message = result.Item2;
+            var result_second = await _categotyService.DeleteCategoryAsync(new Guid(categoryId));
+            var isSuccess = result_second.Item1;
+            message = result_second.Item2;
 
             if (isSuccess)
             {
@@ -185,7 +185,7 @@ namespace API.Controllers
                 {
                     StatusCode = (int)HttpStatusCode.BadRequest,
                     IsSuccess = false,
-                    Messenger = "Category Id Is Invalid !"
+                    Message = "Category Id Is Invalid !"
                 });
 
             var result = await _categotyService.GetCategoryByIdAsync(new Guid(categoryId));

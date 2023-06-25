@@ -11,5 +11,6 @@ namespace Domain.Services
         public Task<Tuple<bool, string>> DeleteCategoryAsync(Guid id);
         public Task<Tuple<CategoryDto, string>> GetCategoryByIdAsync(Guid id);
         public Task<List<ProductDto>> GetProductsByName(int categoryCode);
+        public Task<List<CategoryDto>> GetCategoryListAsync();
     }
 }

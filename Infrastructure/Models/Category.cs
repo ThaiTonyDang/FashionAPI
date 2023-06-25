@@ -18,5 +18,11 @@ namespace Infrastructure.Models
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
         public ICollection<Product> Products { get; set; }
+
+        public string Slug { get; set; }
+        public ICollection<Category> CategoryChildren { get; set; }
+        public Guid? ParentCategoryId { get; set; }
+        [ForeignKey("ParentCategoryId")]
+        public Category ParentCategory { get; set; }
     }
 }

@@ -25,7 +25,8 @@ namespace Domain.Services
                 Name = categoryDto.Name,
                 Description = categoryDto.Description,
                 ImageName = categoryDto.ImageName,
-                CreatedDate = categoryDto.CreateDate
+                CreatedDate = categoryDto.CreateDate,
+                ParentCategoryId = categoryDto.ParentCategoryId
             };
 
             var result = await _categoryRepository.CreateAsync(category);
@@ -59,7 +60,8 @@ namespace Domain.Services
                 Name = categoryDto.Name,
                 Description = categoryDto.Description,
                 ImageName = categoryDto.ImageName,
-                ModifiedDate = categoryDto.ModifiedDate
+                ModifiedDate = categoryDto.ModifiedDate,
+                ParentCategoryId = categoryDto.ParentCategoryId
             };
 
             var result = await _categoryRepository.UpdateAsync(category);
@@ -76,11 +78,9 @@ namespace Domain.Services
             {
                 return Tuple.Create(false, "Id Invalid ! Delete Fail!");
             }    
-            var result = await _categoryRepository.DeleteAsync(id);
-            var isSuccess = result.Item1;
-            var message = result.Item2;
-
-            return Tuple.Create(isSuccess, message);
+            var isSuccess = await _categoryRepository.DeleteAsync(id);
+            if (isSuccess) return Tuple.Create(true, "Deleted successful !");
+            return Tuple.Create(isSuccess, "Deleted fail !");
         }
 
         public async Task<Tuple<CategoryDto, string>> GetCategoryByIdAsync(Guid id)
@@ -89,9 +89,7 @@ namespace Domain.Services
             {
                 return Tuple.Create(default(CategoryDto), "Id Invalid ! Cannot Get Category !");
             }
-            var result = await _categoryRepository.GetCategoryById(id);
-            var category = result.Item1;
-            var message = result.Item2;
+            var category = await _categoryRepository.GetCategoryById(id);
 
             if (category == null)
             {
@@ -105,10 +103,12 @@ namespace Domain.Services
                 Description = category.Description,
                 ImageName = category.ImageName,
                 CreateDate = category.CreatedDate,
-                ModifiedDate = category.ModifiedDate
+                ModifiedDate = category.ModifiedDate,
+                ParentCategoryId = category.ParentCategoryId
+
             };
 
-            return Tuple.Create(categoryDto, message);
+            return Tuple.Create(categoryDto, "Get Category Successful !");
         }
 
         public async Task<List<ProductDto>> GetProductsByName(int categoryCode)
@@ -145,6 +145,33 @@ namespace Domain.Services
                 default:
                     return CATEGORY.KID_FASHION;
             }
+        }
+
+        public async Task<List<CategoryDto>> GetCategoryListAsync()
+        {
+            var categoryList = await _categoryRepository.GetCategoryListAsync();
+
+            var categories = categoryList.Select(c => new CategoryDto
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Slug = c.Slug,
+                Description = c.Description,
+                ImageName = c.ImageName,
+                CreateDate = c.CreatedDate,
+                ParentCategoryId = c.ParentCategoryId,
+                CategoryChildren = c.CategoryChildren.ToList().Select(c => new CategoryDto {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Slug = c.Slug,
+                    Description = c.Description,
+                    ImageName = c.ImageName,
+                    CreateDate = c.CreatedDate,
+                    ParentCategoryId = c.ParentCategoryId,
+                }).ToList()
+            }).ToList();
+
+            return categories;
         }
     }
 }

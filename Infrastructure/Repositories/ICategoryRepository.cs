@@ -12,8 +12,9 @@ namespace Infrastructure.Repositories
         public Task<List<Category>> GetListCategoryAsync();
         public Task<Tuple<bool, string>> CreateAsync(Category category);
         public Task<Tuple<bool, string>> UpdateAsync(Category category);
-        public Task<Tuple<bool, string>> DeleteAsync(Guid id);
-        public Task<Tuple<Category, string>> GetCategoryById(Guid id);
+        public Task<bool> DeleteAsync(Guid id);
+        public Task<Category> GetCategoryById(Guid id);
         public Task<List<Product>> GetProductsByName(string categoryName);
+        public Task<List<Category>> GetCategoryListAsync();
     }
 }

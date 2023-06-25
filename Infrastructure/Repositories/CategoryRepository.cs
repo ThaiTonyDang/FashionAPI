@@ -1,7 +1,6 @@
 ﻿ using Infrastructure.DataContext;
 using Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.Repositories
 {
@@ -19,26 +18,22 @@ namespace Infrastructure.Repositories
 
         public async Task<Tuple<bool, string>> CreateAsync(Category category)
         {
-            try
+            if (category == null)
             {
-                if (category == null)
-                {
-                    throw new CategoryException("Category can not be null");
-                }
+                throw new CategoryException("Category can not be null");
+            }
 
-                if (category.Id == default(Guid)) return Tuple.Create(false, "Category Id Is Invalid");
-                var categoryEntity = _appDbContext.Categories
-                                                  .Where(c => c.Name.ToLower() == category.Name.ToLower())
-                                                  .FirstOrDefault();
-                if (categoryEntity != null) return Tuple.Create(false, "Category Name Already Exists");
-                await _appDbContext.AddAsync(category);
-                var result = await _appDbContext.SaveChangesAsync();
-                return Tuple.Create(result > 0, "Created Category Success !");
-            }
-            catch (Exception exception)
-            {
-                return Tuple.Create(false, $"An Error Occurred : {exception.Message}");
-            }
+            if (category.Id == default(Guid)) return Tuple.Create(false, "Category Id Is Not Default");
+
+            var categoryEntity = _appDbContext.Categories
+                                                .Where(c => c.Name.ToLower() == category.Name.ToLower() && 
+                                                c.ParentCategoryId == category.ParentCategoryId)
+                                                .FirstOrDefault();
+            if (categoryEntity != null) return Tuple.Create(false, "Category already exists");
+
+            await _appDbContext.AddAsync(category);
+            var result = await _appDbContext.SaveChangesAsync();
+            return Tuple.Create(true, "Created Successful !");
         }
 
         public async Task<List<Category>> GetListCategoryAsync()
@@ -46,83 +41,74 @@ namespace Infrastructure.Repositories
             var categories = await _appDbContext.Categories.ToListAsync();
             return categories;
         }
-
+        
         public async Task<Tuple<bool, string>> UpdateAsync(Category category)
         {
-            try
+            
+            if (category == null)
             {
-                if (category == null)
-                {
-                    throw new CategoryException("Category Can Not Be Null");
-                }
-
-                if (category.Id == default(Guid))
-                    return Tuple.Create(false, "Category Id Invalid !");
-                var categoryEntity = _appDbContext.Categories.Where(c => c.Id != category.Id && c.Name == category.Name)
-                                                             .FirstOrDefault();
-                if (categoryEntity != null) return Tuple.Create(false, "Category Name Already Exists! Can't Update");
-
-                var searchResult = await GetCategoryById(category.Id);
-                categoryEntity = searchResult.Item1;
-                var message = searchResult.Item2;
-                if (categoryEntity == null || categoryEntity.Id == default(Guid))
-                {
-                    return Tuple.Create(false, message + "Category Not Found! Update Failed !");
-                }
-
-                categoryEntity.Name = category.Name;
-                categoryEntity.Description = category.Description;
-                categoryEntity.ImageName = category.ImageName;
-                categoryEntity.CreatedDate = category.CreatedDate;
-                categoryEntity.ModifiedDate = category.ModifiedDate;
-
-                _appDbContext.Update(categoryEntity);
-                var result = _appDbContext.SaveChanges();
-                message = "Update Category Success !";
-                return Tuple.Create(result > 0, message);
+                throw new CategoryException("Category Can Not Be Null");
             }
-            catch (Exception exception)
+
+            if (category.Id == default(Guid))
+                return Tuple.Create(false, "Category Id Invalid !");
+            var categoryEntity = _appDbContext.Categories.Where(c => c.Id != category.Id && c.Name == category.Name &&
+                                                                c.ParentCategoryId == category.ParentCategoryId)
+                                                                .FirstOrDefault();
+            if (categoryEntity != null) return Tuple.Create(false, "Category Name Already Exists! Can't Update");
+
+            categoryEntity = await GetCategoryById(category.Id);
+            if (categoryEntity == null || categoryEntity.Id == default(Guid))
             {
-                return Tuple.Create(false, $"An Error Occurred : {exception.Message}");
+                return Tuple.Create(false, "Category Not Found! Update Failed !");
             }
+
+            categoryEntity.Name = category.Name;
+            categoryEntity.Description = category.Description;
+            categoryEntity.ImageName = category.ImageName;
+            categoryEntity.CreatedDate = category.CreatedDate;
+            categoryEntity.ModifiedDate = category.ModifiedDate;
+            categoryEntity.ParentCategoryId = category.ParentCategoryId;
+
+            _appDbContext.Update(categoryEntity);
+            var result = _appDbContext.SaveChanges();
+            var message = "Update Category Success !";
+            return Tuple.Create(result > 0, message);
+            
         }
 
-        public async Task<Tuple<bool, string>> DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            try
+            var categoryEntity = await _appDbContext.Categories
+                                       .Include(c => c.CategoryChildren)
+                                       .FirstOrDefaultAsync(c => c.Id == id);
+            if (categoryEntity == null)
             {
-                var searchResult = await GetCategoryById(id);
-
-                var categoryEntity = searchResult.Item1;
-                var message = searchResult.Item2;
-
-                if (categoryEntity == null)
-                {
-                    return Tuple.Create(false, message + "Deleted Category Failed !");
-                }
-                _appDbContext.Categories.Remove(categoryEntity);
-                var result = _appDbContext.SaveChanges();
-                return Tuple.Create(result > 0, "Deleled Category Success !");
+                return false;
             }
-            catch (Exception exception)
+
+            foreach (var child in categoryEntity.CategoryChildren)
             {
-                return Tuple.Create(false, $"An Error Occurred : {exception.Message}! Deleted Category Failed !");
-            }                   
+                child.ParentCategoryId = categoryEntity.ParentCategoryId;
+            }
+
+            _appDbContext.Categories.Remove(categoryEntity);
+            var result = _appDbContext.SaveChanges();
+            return (result > 0);                             
         }
 
-        public async Task<Tuple<Category, string>> GetCategoryById(Guid id)
+        public async Task<Category> GetCategoryById(Guid id)
         {
-            try
+            var categoryEntity = await _appDbContext.Categories
+                                       .Include(c => c.CategoryChildren)
+                                       .Include(c => c.ParentCategory)
+                                       .FirstOrDefaultAsync(c => c.Id == id);
+            if (categoryEntity == null)
             {
-                var category = await _appDbContext.Categories.FindAsync(id);
+                return null;
+            }
 
-                if (category == null) return Tuple.Create(default(Category), "Category Not Found !");
-                return Tuple.Create(category, "Found the Success Category");
-            }
-            catch (Exception exception)
-            {
-                return Tuple.Create(default(Category), $"{exception.Message} ");
-            }
+            return categoryEntity;          
         }
 
         public async Task<List<Product>> GetProductsByName(string categoryName)
@@ -137,5 +123,15 @@ namespace Infrastructure.Repositories
             var products = category.Products.ToList();
             return await Task.Run(() => products);
         }
+
+        public async Task<List<Category>> GetCategoryListAsync()
+        {
+            var qr = (from c in _appDbContext.Categories select c)
+                     .Include(c => c.ParentCategory)
+                     .Include(c => c.CategoryChildren);
+
+            var categories = (await qr.ToListAsync()).Where(c => c.ParentCategory == null).ToList();
+            return categories;
+        }                                                         
     }
 }

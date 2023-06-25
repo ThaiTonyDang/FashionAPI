@@ -27,6 +27,7 @@ namespace Infrastructure.DataContext
             modelBuilder.ApplyConfiguration(new UserConfigurations());
             modelBuilder.ApplyConfiguration(new RoleConfigurations());
             modelBuilder.ApplyConfiguration(new UserRoleConfigurations());
+            modelBuilder.Entity<Category>(entity => { entity.HasIndex(c => c.Slug); });
         }
     }
 }

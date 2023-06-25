@@ -80,6 +80,7 @@ namespace API.Controllers
 
         }
 
+        [Authorize]
         [HttpPut]
         public async Task<IActionResult> Update(ProductDto productDto)
         {
