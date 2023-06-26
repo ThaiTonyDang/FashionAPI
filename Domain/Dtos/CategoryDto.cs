@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Infrastructure.Models;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Dtos
 {
@@ -20,5 +16,10 @@ namespace Domain.Dtos
         public string ImageName { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime ModifiedDate { get; set; }
+
+        public string Slug { get; set; }
+        public ICollection<CategoryDto> CategoryChildren { get; set; }
+        public Guid? ParentCategoryId { get; set; }
+        public CategoryDto ParentCategory { get; set; }
     }
 }
