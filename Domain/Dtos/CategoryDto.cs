@@ -18,7 +18,8 @@ namespace Domain.Dtos
         public DateTime ModifiedDate { get; set; }
 
         public string Slug { get; set; }
-        public ICollection<CategoryDto> CategoryChildren { get; set; }
+        public ICollection<CategoryDto> CategoryChildrens { get; set; }
+        public ICollection<ProductDto> ProductDtos { get; set; }
         public Guid? ParentCategoryId { get; set; }
         public CategoryDto ParentCategory { get; set; }
     }

@@ -36,12 +36,6 @@ namespace Infrastructure.Repositories
             return Tuple.Create(true, "Created Successful !");
         }
 
-        public async Task<List<Category>> GetListCategoryAsync()
-        {
-            var categories = await _appDbContext.Categories.ToListAsync();
-            return categories;
-        }
-        
         public async Task<Tuple<bool, string>> UpdateAsync(Category category)
         {
             
@@ -111,27 +105,17 @@ namespace Infrastructure.Repositories
             return categoryEntity;          
         }
 
-        public async Task<List<Product>> GetProductsByName(string categoryName)
-        {
-            var category =  _appDbContext.Categories.Where(c => c.Name.ToLower().Equals(categoryName.ToLower())).FirstOrDefault();
-            if (category == null)
-            {
-                return await Task.Run(() => default(List<Product>));
-            }    
-            var e = _appDbContext.Entry(category);
-            e.Collection(c => c.Products).Load();
-            var products = category.Products.ToList();
-            return await Task.Run(() => products);
-        }
-
         public async Task<List<Category>> GetCategoryListAsync()
         {
             var qr = (from c in _appDbContext.Categories select c)
-                     .Include(c => c.ParentCategory)
-                     .Include(c => c.CategoryChildren);
+                      .Include(c => c.Products)
+                      .Include(c => c.ParentCategory)
+                      .Include(c => c.CategoryChildren);
 
             var categories = (await qr.ToListAsync()).Where(c => c.ParentCategory == null).ToList();
             return categories;
-        }                                                         
+        }
+
+
     }
 }

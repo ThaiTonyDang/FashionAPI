@@ -23,18 +23,4 @@ namespace Utilities.GlobalHelpers
         public const Int32 Width = 500;
         public const Int32 Height = 666;
     }
-
-    public struct CATEGORY
-    {
-        public const string MEN_FASHION = "MEN FASHION";
-        public const string WOMEN_FASHION = "WOMEN FASHION";
-        public const string KID_FASHION = "KID FASHION";
-    }
-
-    public enum CATEGORY_CODE
-    {
-        MEN = 1,
-        WOMEN = 2,
-        KID = 3,
-    }
 }
