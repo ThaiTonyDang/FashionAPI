@@ -1,6 +1,8 @@
 ﻿using Domain.Dtos;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
+using SixLabors.ImageSharp;
+using System.Xml.Linq;
 using Utilities.GlobalHelpers;
 
 namespace Domain.Services
@@ -31,23 +33,6 @@ namespace Domain.Services
 
             var result = await _categoryRepository.CreateAsync(category);
             return result;
-        }
-
-        public async Task<List<CategoryDto>> GetListCategoryAsync()
-        {
-            var listCategory = await _categoryRepository.GetListCategoryAsync();
-            var listCategoryViewModel = listCategory.Select(category => new CategoryDto()
-            {
-                Description = category.Description,
-                Id = category.Id,
-                Name = category.Name,
-                ImageName = category.ImageName,
-                CreateDate = category.CreatedDate,
-                ModifiedDate = category.ModifiedDate
-
-            }).ToList();
-
-            return listCategoryViewModel;
         }
 
         public async Task<Tuple<bool, string>> UpdateCategoryAsync(CategoryDto categoryDto)
@@ -111,67 +96,70 @@ namespace Domain.Services
             return Tuple.Create(categoryDto, "Get Category Successful !");
         }
 
-        public async Task<List<ProductDto>> GetProductsByName(int categoryCode)
+        public async Task<List<CategoryDto>> GetCategoryListAsync()
         {
-            var categoryName = GetCategoryNameByCode(categoryCode);
-            var products = await _categoryRepository.GetProductsByName(categoryName);
-            if (products == null)
-            {
-                return null;
-            }    
-            var productDto = products.Select(p => new ProductDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Price = p.Price,
-                Provider = p.Provider,
-                CategoryId = p.CategoryId,
-                Description = p.Description,
-                QuantityInStock = p.QuantityInStock,
-                MainImageName = p.MainImageName,
-            }).ToList();
+            var categories = await _categoryRepository.GetCategoryListAsync();
 
-            return productDto;
+            var categoryDtos = new List<CategoryDto>();
+            MapDataCategory(categoryDtos, categories);
+
+            int i = 0;
+            foreach (var category in categories)
+            {
+                if(categoryDtos[i].CategoryChildrens == null)
+                {
+                    var destination = new List<CategoryDto>();
+                    var sourceList = category.CategoryChildren.ToList();
+                    MapDataCategory(destination, sourceList);
+                    categoryDtos[i].CategoryChildrens = destination;
+                }                               
+                i++;
+            }
+
+            return categoryDtos;
         }
 
-        private string GetCategoryNameByCode(int categoryCode)
+        private void MapDataCategory(List<CategoryDto> des, List<Category> source)
         {
-            switch (categoryCode)
+
+            foreach (var category in source)
             {
-                case ((int)CATEGORY_CODE.MEN):
-                    return CATEGORY.MEN_FASHION;
-                case ((int)CATEGORY_CODE.WOMEN):
-                    return CATEGORY.WOMEN_FASHION;
-                default:
-                    return CATEGORY.KID_FASHION;
+                var categoryDto = new CategoryDto();
+                categoryDto.Id = category.Id;
+                categoryDto.Name = category.Name;
+                categoryDto.Description = category.Description;
+                categoryDto.ImageName = category.ImageName;
+                categoryDto.CreateDate = category.CreatedDate;
+                categoryDto.ParentCategoryId = category.ParentCategoryId;
+                categoryDto.Slug = category.Slug;
+                if(categoryDto.ProductDtos == null)
+                {
+                    var productDtos = new List<ProductDto>();
+                    MapDataProduct(productDtos, category.Products.ToList());
+                    categoryDto.ProductDtos = productDtos;
+                }    
+              
+                des.Add(categoryDto);
             }
         }
 
-        public async Task<List<CategoryDto>> GetCategoryListAsync()
+
+        private void MapDataProduct(List<ProductDto> productDtos, List<Product> products)
         {
-            var categoryList = await _categoryRepository.GetCategoryListAsync();
-
-            var categories = categoryList.Select(c => new CategoryDto
+            foreach (var product in products)
             {
-                Id = c.Id,
-                Name = c.Name,
-                Slug = c.Slug,
-                Description = c.Description,
-                ImageName = c.ImageName,
-                CreateDate = c.CreatedDate,
-                ParentCategoryId = c.ParentCategoryId,
-                CategoryChildren = c.CategoryChildren.ToList().Select(c => new CategoryDto {
-                    Id = c.Id,
-                    Name = c.Name,
-                    Slug = c.Slug,
-                    Description = c.Description,
-                    ImageName = c.ImageName,
-                    CreateDate = c.CreatedDate,
-                    ParentCategoryId = c.ParentCategoryId,
-                }).ToList()
-            }).ToList();
-
-            return categories;
+                var productDto = new ProductDto();
+                productDto.Id = product.Id;
+                productDto.Name = product.Name;
+                productDto.MainImageName = product.MainImageName;
+                productDto.Provider = product.Provider;
+                productDto.CategoryId = product.CategoryId;
+                productDto.Description = product.Description;
+                productDto.CreateDate = product.CreatedDate;
+                productDto.QuantityInStock = product.QuantityInStock;
+                productDto.Price = product.Price;
+                productDtos.Add(productDto);
+            }             
         }
     }
 }

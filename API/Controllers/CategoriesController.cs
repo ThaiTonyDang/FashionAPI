@@ -209,29 +209,6 @@ namespace API.Controllers
                 IsSuccess = false,
                 Message = $"{message}"
             });
-        }
-
-        [HttpGet]
-        [Route("products/{categoryCode}")]
-        public async Task<IActionResult> GetProducts(int categoryCode)
-        {
-            var products = await _categotyService.GetProductsByName(categoryCode);
-            if (products == null)
-                return BadRequest(new
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    IsSuccess = false,
-                    Message = "Product list cannot found"
-                });
-
-            return Ok(new
-            {
-                StatusCode = (int)HttpStatusCode.OK,
-                IsSuccess = true,
-                Message = "Get List Success",
-                Data = products
-            });
-
-        }
+        }      
     }
 }
