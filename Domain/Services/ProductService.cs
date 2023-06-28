@@ -8,14 +8,14 @@ namespace Domain.Services
     public class ProductService : IProductService
 	{
 		private readonly IProductRepository _productRepository;
-		public ProductService(IProductRepository productRepository)
+        public ProductService(IProductRepository productRepository)
 		{
 			_productRepository = productRepository;
 		}
 
-		public async Task<List<ProductDto>> GetListProductsAsync()
+		public async Task<List<ProductDto>> GetProductListAsync()
 		{
-			var products = await _productRepository.GetListProductsAsync();
+			var products = await _productRepository.GetProductListAsync();
 			var listProducts = products.Select(p => new ProductDto
 			{
 				Id = p.Id,
@@ -127,6 +127,30 @@ namespace Domain.Services
 
 		    return Tuple.Create(productDto, message);
 
+        }
+
+        public async Task<List<ProductDto>> GetPagingProductListAsync(int currentPage, int pageSize)
+        {
+            var listProduct = await _productRepository.GetPagingProductListAsync(currentPage, pageSize);
+            var listProductViewModel = listProduct.Select(product => new ProductDto()
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Provider = product.Provider,
+                Price = product.Price,
+                Description = product.Description,
+                CategoryId = product.CategoryId,
+                MainImageName = product.MainImageName,
+				QuantityInStock = product.QuantityInStock,
+				CreateDate = product.CreatedDate,
+            }).ToList();
+
+            return listProductViewModel;
+        }
+
+        public async Task<int> GetTotalItems()
+        {
+			return await _productRepository.GetTotalItems();
         }
     }
 }
