@@ -1,6 +1,7 @@
 ﻿using Infrastructure.DataContext;
 using Infrastructure.Dtos;
 using Infrastructure.Models;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -49,7 +50,7 @@ namespace Infrastructure.Repositories
             return new SuccessResult("Created product successfuly");
         }
 
-        public async Task<List<Product>> GetListProductsAsync()
+        public async Task<List<Product>> GetProductListAsync()
         {
             var list = await _appDbContext.Products.ToListAsync();
             return list;
@@ -138,6 +139,20 @@ namespace Infrastructure.Repositories
                 return Tuple.Create(default(Product), $"{exception.Message}! Product Does Not Exist !");
             }
 
+        }
+
+        public async Task<List<Product>> GetPagingProductListAsync(int currentPage, int pageSize)
+        {
+            var products = await _appDbContext.Products.OrderBy(p => p.Name)
+                                                       .Skip((currentPage - 1) * pageSize)
+                                                       .Take(pageSize).AsQueryable()
+                                                       .ToListAsync();
+            return products;
+        }
+
+        public async Task<int> GetTotalItems()
+        {
+            return await _appDbContext.Products.CountAsync();
         }
     }
 }

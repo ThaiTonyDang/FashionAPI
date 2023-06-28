@@ -56,28 +56,41 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetList()
+        public async Task<IActionResult> Paging(int currentPage, int pageSize)
         {
-            var products = await _productService.GetListProductsAsync();
-
-            if (products != null)
+            var pagingProducts = await _productService.GetPagingProductListAsync(currentPage, pageSize);
+       
+            if(pagingProducts != null)
             {
                 return Ok(new
                 {
                     StatusCode = (int)HttpStatusCode.OK,
                     IsSuccess = true,
                     Message = "Get list success",
-                    Data = products,
+                    Data = pagingProducts,
                 });
             }
 
             return NotFound(new
             {
                 StatusCode = (int)HttpStatusCode.NotFound,
-                IsSuccess = true,
+                IsSuccess = false,
                 Message = "Get list fail !",
             });
+        }
 
+        [HttpGet]
+        [Route("total-products")]
+        public async Task<IActionResult> TotalItems()
+        {
+            var totalItem = await _productService.GetTotalItems();
+            return Ok(new
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+                IsSuccess = true,
+                Message = "Get total success !",
+                Data = totalItem,
+            });
         }
 
         [Authorize]
