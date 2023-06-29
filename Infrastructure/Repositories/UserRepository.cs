@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<string>> GetListRoles(User user)
         {
-            var data = await _userManager.FindByIdAsync(user.Id.ToString());
+            var data = await GetUserById(user.Id.ToString());
             var roles = await _userManager.GetRolesAsync(data);
             return roles.AsEnumerable();
         }
@@ -38,6 +38,11 @@ namespace Infrastructure.Repositories
         public Task<User> GetUserByEmail(string email)
         {
             return this._userManager.FindByEmailAsync(email);
+        }
+
+        public Task<User> GetUserById(string userId)
+        {
+            return this._userManager.FindByIdAsync(userId);
         }
 
         public async Task<bool> UpdateUserAsync(User user)

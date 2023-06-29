@@ -73,23 +73,8 @@ namespace Domain.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("firstName", user.FirstName),
-                new Claim("lastName", user.LastName),
-                new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth.ToShortDateString()),
             };
 
-            if (user.AvatarImage != null)
-            {
-                claims.Add(new Claim("avatar", user.AvatarImage));
-            }
-            if (user.PhoneNumber != null)
-            {
-                claims.Add(new Claim(ClaimTypes.MobilePhone, user.PhoneNumber));
-            }
-            if (user.Address != null)
-            {
-                claims.Add(new Claim(ClaimTypes.StreetAddress, user.Address));
-            }
             var roles = await this._userRepository.GetListRoles(user);
             foreach(var role in roles)
             {

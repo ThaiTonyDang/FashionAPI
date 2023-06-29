@@ -12,5 +12,6 @@ namespace Infrastructure.Repositories
         Task<bool> UpdateUserAsync(User user);
         Task<bool> UpdateUserAvatarAsync(User user);
         Task<bool> ChangeUserPasswordAsync(PasswordModel passwordModel, string email);
+        Task<User> GetUserById(string userId);
     }
 }

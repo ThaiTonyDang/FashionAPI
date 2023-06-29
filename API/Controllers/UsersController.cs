@@ -108,38 +108,6 @@ namespace API.Controllers
 
         [Authorize]
         [HttpPut]
-        [Route("avatar-update")]
-        public async Task<IActionResult> UpdateUserAvatar(UserDto userDto)
-        {
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            if (userDto == null)
-            {
-                return BadRequest(new Error<string>(
-                        (int)HttpStatusCode.BadRequest,
-                        "Update Failed",
-                        "User can not be null or empty")
-                    );
-            }
-
-            var isSuccess = await this._userService.UpdateUserAvatarAsync(userDto, email);
-            if (!isSuccess)
-            {
-                return BadRequest(new
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    IsSuccess = false,
-                });
-            }
-
-            return Ok(new
-            {
-                StatusCode = (int)HttpStatusCode.OK,
-                IsSuccess = true,
-            });
-        }
-
-        [Authorize]
-        [HttpPut]
         [Route("update")]
         public async Task<IActionResult> UpdateUser(UserDto userDto)
         {
