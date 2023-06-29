@@ -1,4 +1,5 @@
 ﻿using Domain.Dtos;
+using Domain.Dtos.Users;
 using Infrastructure.Models;
 
 namespace Domain.Services
@@ -6,11 +7,11 @@ namespace Domain.Services
     public interface IUserService
     {
         Task<bool> RegisterUserAsync(UserRegistrationDto user);
-        Task<bool> ValidateUserAsync(UserDto user);
-        Task<string> CreateTokenAsync(UserDto user);
-        public Task<bool> UpdateUserAsync(UserDto userDto);
-        public Task<bool> UpdateUserAvatarAsync(UserDto userDto, string email);
-        public Task<UserDto> GetUserByEmail(string email);
-        Task<bool> ChangeUserPasswordAsync(PasswordModelDto passwordModelDto, string password);
+        Task<bool> ValidateUserAsync(UserLoginDto user);
+        Task<string> CreateTokenAsync(UserLoginDto user);
+        Task<UserInfoDto> GetUserInfo(string userId);
+        Task<bool> UpdateUserAsync(string userId, UserInfoDto userInfo);
+        Task<bool> UpdateUserAvatarAsync(string userId, string avatar);
+        Task<bool> UpdateUserPasswordAsync(string userId, string password, string newPassword);
     }
 }

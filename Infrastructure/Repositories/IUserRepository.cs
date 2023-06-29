@@ -10,8 +10,7 @@ namespace Infrastructure.Repositories
         Task<bool> ValidationUser(User user, string password);
         Task<IEnumerable<string>> GetListRoles(User user);
         Task<bool> UpdateUserAsync(User user);
-        Task<bool> UpdateUserAvatarAsync(User user);
-        Task<bool> ChangeUserPasswordAsync(PasswordModel passwordModel, string email);
+        Task<bool> ChangeUserPasswordAsync(User user, string password, string newPassword);
         Task<User> GetUserById(string userId);
     }
 }

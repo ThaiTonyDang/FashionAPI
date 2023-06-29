@@ -1,12 +1,12 @@
 ﻿namespace Infrastructure.Dtos
 {
-    public class Result
+    public class ResultDto
     {
         public bool IsSuccess { get; set; }
         public string Message { get; set; }
     }
 
-    public class ErrorResult : Result
+    public class ErrorResult : ResultDto
     {
         public ErrorResult(string message)
         {
@@ -14,7 +14,7 @@
             this.Message = message;
         }
     }
-    public class SuccessResult : Result
+    public class SuccessResult : ResultDto
     {
         public SuccessResult(string message)
         {

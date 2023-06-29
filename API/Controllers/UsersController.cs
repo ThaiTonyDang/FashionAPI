@@ -1,9 +1,11 @@
 ﻿using API.Dtos;
 using Domain.Dtos;
+using Domain.Dtos.Users;
 using Domain.Services;
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -24,7 +26,7 @@ namespace API.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> Register([FromBody] UserRegistrationDto user)
+        public async Task<IActionResult> RegisterUserAsync([FromBody] UserRegistrationDto user)
         {
             if (user == null)
             {
@@ -69,7 +71,7 @@ namespace API.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login([FromBody] UserDto user)
+        public async Task<IActionResult> LoginAsync([FromBody] UserLoginDto user)
         {
             if (user == null)
             {
@@ -107,9 +109,30 @@ namespace API.Controllers
         }
 
         [Authorize]
+        [HttpGet]
+        [Route("profile")]
+        public async Task<IActionResult> GetUser()
+        {
+            var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            var user = await _userService.GetUserInfo(userId);
+            if (user == null)
+                return NotFound(new Error<string>(
+                        (int)HttpStatusCode.NotFound,
+                        "User null",
+                        "User Can not found")
+                    );
+            return Ok(new
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+                IsSuccess = true,
+                Data = user
+            });
+        }
+
+        [Authorize]
         [HttpPut]
-        [Route("update")]
-        public async Task<IActionResult> UpdateUser(UserDto userDto)
+        [Route("profile")]
+        public async Task<IActionResult> UpdateProfileAsync(UserInfoDto userDto)
         {
             if (userDto == null)
             {
@@ -118,8 +141,10 @@ namespace API.Controllers
                         "Update Failed",
                         "User can not be null or empty")
                     );
-            } 
-            var isSuccess = await this._userService.UpdateUserAsync(userDto);
+            }
+
+            var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            var isSuccess = await this._userService.UpdateUserAsync(userId, userDto);
             if (!isSuccess)
             {
                 return BadRequest(new
@@ -137,34 +162,21 @@ namespace API.Controllers
         }
 
         [Authorize]
-        [HttpGet]
-        [Route("single-user")]
-        public async Task<IActionResult> GetUser()
-        {
-            var email = User.FindFirstValue(ClaimTypes.Email);
-
-            var user = await _userService.GetUserByEmail(email);
-            if(user == null)
-               return NotFound(new Error<string>(
-                       (int)HttpStatusCode.NotFound,
-                       "User null",
-                       "User Can not found")
-                   );
-            return Ok(new
-            {
-                StatusCode = (int)HttpStatusCode.OK,
-                IsSuccess = true,
-                Data = user
-            });
-        }
-
-        [Authorize]
         [HttpPost]
         [Route("reset-password")]
-        public async Task<IActionResult> ChangePassword(PasswordModelDto passwordModelDto)
+        public async Task<IActionResult> ChangePasswordAsync(UserPasswordChangeDto userPasswordDto)
         {
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            var result = await _userService.ChangeUserPasswordAsync(passwordModelDto, email);
+            if(userPasswordDto == null || !userPasswordDto.IsPasswordValidated())
+            {
+                return BadRequest(new Error<string>(
+                        (int)HttpStatusCode.BadRequest,
+                        "Change User's Password Failed",
+                        "Confirm Password does not match")
+                    );
+            }
+
+            var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            var result = await _userService.UpdateUserPasswordAsync(userId, userPasswordDto.CurrentPassword, userPasswordDto.NewPassword);
             if(!result)
                 return BadRequest(new
                 {

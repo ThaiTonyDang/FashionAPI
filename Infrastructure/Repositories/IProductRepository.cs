@@ -5,7 +5,7 @@ namespace Infrastructure.Repositories
 {
     public interface IProductRepository
     {
-        public Task<Result> CreateAsync(Product product);
+        public Task<ResultDto> CreateAsync(Product product);
         public Task<List<Product>> GetProductListAsync();
         public Task<List<Product>> GetPagingProductListAsync(int currentPage, int pageSize);
         public Task<Tuple<bool, string>> UpdateAsync(Product product);

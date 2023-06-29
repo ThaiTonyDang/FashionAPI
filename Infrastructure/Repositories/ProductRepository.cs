@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
             _appDbContext = appDbContext;
         }
 
-        public async Task<Result> CreateAsync(Product product)
+        public async Task<ResultDto> CreateAsync(Product product)
         {
             if (product == null)
                 throw new ProductException("Product can not be null");

@@ -15,10 +15,9 @@ namespace Infrastructure.Repositories
             _roleManager = roleManager;
         }
 
-        public async Task<bool> ChangeUserPasswordAsync(PasswordModel passwordModel, string email)
+        public async Task<bool> ChangeUserPasswordAsync(User user, string password, string newPassword)
         {
-            var user = await GetUserByEmail(email);
-            var result = await _userManager.ChangePasswordAsync(user, passwordModel.CurrentPassword, passwordModel.NewPassword);
+            var result = await _userManager.ChangePasswordAsync(user, password, newPassword);
             return result.Succeeded;
         }
 
@@ -47,23 +46,9 @@ namespace Infrastructure.Repositories
 
         public async Task<bool> UpdateUserAsync(User user)
         {
-            var userEntity = await _userManager.FindByEmailAsync(user.Email);
-            userEntity.Address = user.Address;
-            userEntity.PhoneNumber = user.PhoneNumber;
-            userEntity.LastName = user.LastName;
-            userEntity.FirstName = user.FirstName;
-            userEntity.DateOfBirth = user.DateOfBirth;
-            var result = await _userManager.UpdateAsync(userEntity);
+            var result = await _userManager.UpdateAsync(user);
             return result.Succeeded;
 
-        }
-
-        public async Task<bool> UpdateUserAvatarAsync(User user)
-        {
-            var userEntity = await GetUserByEmail(user.Email);
-            userEntity.AvatarImage = user.AvatarImage;
-            var result = await _userManager.UpdateAsync(userEntity);
-            return result.Succeeded;
         }
 
         public async Task<bool> ValidationUser(User user, string password)

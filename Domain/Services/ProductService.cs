@@ -32,7 +32,7 @@ namespace Domain.Services
 			return listProducts;
 		}
 
-		public async Task<Result> CreateProductAsync(ProductDto productDto)
+		public async Task<ResultDto> CreateProductAsync(ProductDto productDto)
 		{
 			if (productDto == null || productDto?.Price == null)
 				return new ErrorResult("The Product to be created doesn't exist or price value is invalid");

@@ -5,7 +5,7 @@ namespace Domain.Services
 {
     public interface IProductService
     {
-        public Task<Result> CreateProductAsync(ProductDto product);
+        public Task<ResultDto> CreateProductAsync(ProductDto product);
         public Task<List<ProductDto>> GetProductListAsync();
         public Task<Tuple<bool, string>> UpdateProductAsync(ProductDto productDto);
         public Task<Tuple<bool, string>> DeleteProductAsync(Guid id);

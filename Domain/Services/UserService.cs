@@ -1,8 +1,11 @@
 ﻿using Domain.Dtos;
+using Domain.Dtos.Users;
 using Infrastructure.AggregateModel;
 using Infrastructure.Config;
+using Infrastructure.Dtos;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -40,7 +43,7 @@ namespace Domain.Services
             return result;
         }
 
-        public async Task<string> CreateTokenAsync(UserDto user)
+        public async Task<string> CreateTokenAsync(UserLoginDto user)
         {
             var signingCredentials = GetSigningCredentials();
             var claims = await GetClaims(user.Email);
@@ -49,7 +52,7 @@ namespace Domain.Services
             return token;
         }
 
-        public async Task<bool> ValidateUserAsync(UserDto userLogin)
+        public async Task<bool> ValidateUserAsync(UserLoginDto userLogin)
         {
             var user = new User
             {
@@ -59,11 +62,79 @@ namespace Domain.Services
             return await _userRepository.ValidationUser(user, userLogin.Password);
         }
 
+        public async Task<UserInfoDto> GetUserInfo(string userId)
+        {
+            var user = await _userRepository.GetUserById(userId);
+            var userDto = new UserInfoDto
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                Address = user.Address,
+                DateOfBirth = user.DateOfBirth
+            };
+
+            return userDto;
+        }
+
+        public async Task<bool> UpdateUserAsync(string userId, UserInfoDto userInfo)
+        {
+            var user = await _userRepository.GetUserById(userId);
+
+            user.Address = userInfo.Address;
+            user.PhoneNumber = userInfo.PhoneNumber;
+            user.LastName = userInfo.LastName;
+            user.FirstName = userInfo.FirstName;
+            user.DateOfBirth = userInfo.DateOfBirth;
+
+            var result = await _userRepository.UpdateUserAsync(user);
+
+            return result;
+        }
+
+        public async Task<bool> UpdateUserAvatarAsync(string userId, string avatar)
+        {
+            var user =  await _userRepository.GetUserById(userId);
+            if (user == null)
+            {
+                return false;
+            }
+
+            user.AvatarImage = avatar;
+            var result = await _userRepository.UpdateUserAsync(user);
+            return result;
+        }
+
+        public async Task<bool> UpdateUserPasswordAsync(string userId, string password, string newPassword)
+        {
+            var user = await _userRepository.GetUserById(userId);
+            if(user == null)
+            {
+                return false;
+            }
+
+            var result = await _userRepository.ChangeUserPasswordAsync(user, password, newPassword);
+            return result;
+        }
+
+
         private SigningCredentials GetSigningCredentials()
         {
             var secret = Encoding.UTF8.GetBytes(_tokenConfig.Secret);
             var securityKey = new SymmetricSecurityKey(secret);
             return new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        }
+        private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials,
+            List<Claim> claims)
+        {
+            var tokenOptions = new JwtSecurityToken(
+                _tokenConfig.Issuer,
+                _tokenConfig.Audience,
+                claims,
+                expires: DateTime.Now.AddMinutes(_tokenConfig.Expired),
+                signingCredentials: signingCredentials);
+
+            return tokenOptions;
         }
 
         private async Task<List<Claim>> GetClaims(string email)
@@ -76,7 +147,7 @@ namespace Domain.Services
             };
 
             var roles = await this._userRepository.GetListRoles(user);
-            foreach(var role in roles)
+            foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
@@ -84,75 +155,5 @@ namespace Domain.Services
             return claims;
         }
 
-        private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials,
-            List<Claim> claims)
-        {
-            var tokenOptions = new JwtSecurityToken(
-                _tokenConfig.Issuer,
-                _tokenConfig.Audience,
-                claims,
-                expires: DateTime.Now.AddMinutes(_tokenConfig.Expired),
-                signingCredentials: signingCredentials);
-                        
-            return tokenOptions;
-        }
-
-        public async Task<bool> UpdateUserAsync(UserDto userDto)
-        {
-            var user = new User
-            {
-                Address = userDto.Address,
-                PhoneNumber = userDto.PhoneNumber,
-                LastName = userDto.LastName,
-                FirstName = userDto.FirstName,
-                Email = userDto.Email,
-                DateOfBirth = userDto.Birthday
-            };
-            var result = await _userRepository.UpdateUserAsync(user);
-            if(result) return true ;
-            return false;
-        }
-
-        public async Task<bool> UpdateUserAvatarAsync(UserDto userDto, string email)
-        {
-            var user = new User
-            {
-                Email = email,
-                AvatarImage = userDto.AvatarImage,
-            };
-
-            var result = await _userRepository.UpdateUserAvatarAsync(user);
-            if (result) return true;
-            return false;
-        }
-
-        public async Task<UserDto> GetUserByEmail(string email)
-        {
-            var user = await _userRepository.GetUserByEmail(email);
-            var userDto = new UserDto
-            {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                AvatarImage = user.AvatarImage,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                Address = user.Address,
-                Birthday = user.DateOfBirth
-            };
-
-            return userDto;
-        }
-
-        public async Task<bool> ChangeUserPasswordAsync(PasswordModelDto passwordModelDto, string email)
-        {
-            var passModel = new PasswordModel
-            {
-                CurrentPassword = passwordModelDto.CurrentPassword,
-                ConfirmPassword = passwordModelDto.ConfirmPassword,
-                NewPassword = passwordModelDto.NewPassword
-            };
-            var result = await _userRepository.ChangeUserPasswordAsync(passModel, email);
-            return result;
-        }
     }
 }
