@@ -170,5 +170,26 @@ namespace API.Controllers
                 Data = baseInformation,
             });
         }
+
+        [HttpPut]
+        [Route("paid-status-update")]
+        public async Task<IActionResult> UpdatePayStatus(OrderDto orderDto)
+        {
+
+            var result = await _orderService.UpdateOrderPaidStatusAsync(orderDto.Id);
+            if (result)
+            {
+                return Ok(new
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    IsSuccess = true,
+                });
+            }
+            return NotFound(new
+            {
+                StatusCode = (int)HttpStatusCode.NotFound,
+                IsSuccess = false,
+            });
+        }
     }
 }

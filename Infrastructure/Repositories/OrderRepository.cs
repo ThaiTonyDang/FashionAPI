@@ -21,6 +21,7 @@ namespace Infrastructure.Repositories
         {
             _appDbContext = appDbContext;
         }
+
         public async Task<Tuple<bool, string>> CreateOrderAsync(Order order)
         {
             try
@@ -39,19 +40,6 @@ namespace Infrastructure.Repositories
             {
                 return Tuple.Create(false, $"An Error Occurred : {exception.Message}");
             }
-        }
-
-        private async Task<bool> CreateOrdersAsync(Order order)
-        {
-            var orderdetails = order.OrderDetails.ToList();
-            await _appDbContext.Orders.AddAsync(order);
-            var result = await _appDbContext.SaveChangesAsync();
-            if (result > 0)
-            {              
-                return true;
-            }
-
-            return false;          
         }
 
         public async Task<List<OrderAggregate>> GettAggregatedOrderListAsync()
@@ -124,24 +112,31 @@ namespace Infrastructure.Repositories
             return baseInformations;
         }
 
-        public async Task<Tuple<bool, string>> CreateOrderDetailAsync(OrderDetail orderDetail)
+        public async Task<bool> UpdateOrderPaidStatusAsync(Guid orderId)
         {
-            try
+            var orderEntity = await _appDbContext.Orders.FindAsync(orderId);
+            if(orderEntity == null)
             {
-                if (orderDetail == null)
-                {
-                    throw new OrderException("Order detail can not be null");
-                }
-
-                await _appDbContext.OrderDetails.AddAsync(orderDetail);
-                var result = await _appDbContext.SaveChangesAsync();
-                return Tuple.Create(result > 0, "Created Order Detail Success !");
-
+                return false;
             }
-            catch (Exception exception)
+
+            orderEntity.IsPaid = true;
+            _appDbContext.Update(orderEntity);
+            var result = _appDbContext.SaveChanges();
+            return result > 0;
+        }
+
+        private async Task<bool> CreateOrdersAsync(Order order)
+        {
+            var orderdetails = order.OrderDetails.ToList();
+            await _appDbContext.Orders.AddAsync(order);
+            var result = await _appDbContext.SaveChangesAsync();
+            if (result > 0)
             {
-                return Tuple.Create(false, $"An Error Occurred : {exception.Message}");
+                return true;
             }
+
+            return false;
         }
     }
 }

@@ -11,8 +11,8 @@ namespace Infrastructure.Repositories
     public interface IOrderRepository
     {
         public Task<Tuple<bool, string>> CreateOrderAsync(Order order);
-        public Task<Tuple<bool, string>> CreateOrderDetailAsync(OrderDetail orderDetail);
         public Task<List<OrderAggregate>> GettAggregatedOrderListAsync();
         public Task<List<OrderDetailAggregate>> GetAggregatedOrderDetailAsync();
+        public Task<bool> UpdateOrderPaidStatusAsync(Guid orderId);
     }
 }
