@@ -13,7 +13,6 @@ namespace Infrastructure.Models
         public DateTime RequiredDate { get; set; }
         public string ShipAddress { get; set; }
         public decimal TotalPrice { get; set; }
-        public bool Status { get; set; }
         public bool IsPaid { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
         public Guid UserId { get; set; }

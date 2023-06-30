@@ -33,7 +33,8 @@ namespace Domain.Services
                 Email = email,
                 UserName = email,
                 PhoneNumber = registerUser.PhoneNumber,
-                CreatedDate = DateTime.Now.ToUniversalTime()
+                CreatedDate = DateTime.Now.ToUniversalTime(),
+                Address = registerUser.Address
             };
 
             var result = await _userRepository.CreateUserAsync(user, registerUser.Password);

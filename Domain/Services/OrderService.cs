@@ -39,29 +39,14 @@ namespace Domain.Services
                 OrderDate = orderDto.OrderDate,
                 RequiredDate = orderDto.RequiredDate,
                 ShipAddress = orderDto.ShipAddress,
-                Status = orderDto.Status,
                 IsPaid = orderDto.IsPaid,
                 TotalPrice = orderDto.TotalPrice,
                 UserId = orderDto.UserId,
-                OrderDetails = orderDetails
+                OrderDetails = orderDetails,
+                
             };
 
             var result = await _orderRepository.CreateOrderAsync(order);
-            return result;
-        }
-
-        public async Task<Tuple<bool, string>> CreateOrderDetailAsync(OrderDetailDto orderDetailDto)
-        {
-            var orderDetail = new OrderDetail()
-            {
-                OrderId = orderDetailDto.OrderId,
-                ProductId = orderDetailDto.ProductId,
-                Price = orderDetailDto.Price,
-                Quantity = orderDetailDto.Quantity,
-                Discount = orderDetailDto.Discount
-            };
-
-            var result = await _orderRepository.CreateOrderDetailAsync(orderDetail);
             return result;
         }
 
@@ -169,6 +154,12 @@ namespace Domain.Services
             }
 
             return Tuple.Create(products, "Successfully found product list");
+        }
+
+        public async Task<bool> UpdateOrderPaidStatusAsync(Guid orderId)
+        {
+            var result = await _orderRepository.UpdateOrderPaidStatusAsync(orderId);
+            return result;
         }
     }
 }
