@@ -37,7 +37,7 @@ namespace API.ExceptionMiddleware
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            var error = new Error<string[]>(
+            var error = new Error(
                     context.Response.StatusCode,
                     "Internal Server Error ! There is an error on the server side",
                     messages.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None)

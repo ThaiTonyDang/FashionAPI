@@ -2,6 +2,7 @@
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace API.Extensions
 {
@@ -9,6 +10,8 @@ namespace API.Extensions
     {
         public static void AddIdentityServices(this IServiceCollection services)
         {
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
             services.AddIdentity<User, Role>(options =>
             {
                 options.Password.RequireDigit = false;

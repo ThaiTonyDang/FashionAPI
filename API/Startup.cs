@@ -16,6 +16,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using API.ExceptionMiddleware;
 using Microsoft.AspNetCore.HttpOverrides;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace API
 {
@@ -42,10 +43,7 @@ namespace API
                 opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
-            });
+            services.AddSwagger();
 
             services.AddDbContext<AppDbContext>(x =>
                                    x.UseSqlServer(Configuration.GetConnectionString("FashionWeb")));

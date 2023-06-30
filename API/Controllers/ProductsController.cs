@@ -29,10 +29,10 @@ namespace API.Controllers
             if (productDto == null)
             {
                 return BadRequest(
-                    new Error<string>(
+                    new Error(
                         (int)HttpStatusCode.BadRequest,
                         "Create product failed",
-                        "Product can not be null")
+                        new[] { "Product can not be null" })
                     );
             }
 
@@ -40,11 +40,11 @@ namespace API.Controllers
             if (!result.IsSuccess)
             {
                 return StatusCode(
-                    (int)HttpStatusCode.InternalServerError, 
-                    new Error<string>(
+                    (int)HttpStatusCode.InternalServerError,
+                    new Error(
                         (int)HttpStatusCode.InternalServerError,
                         "Create product failed",
-                        result.Message)
+                        new[] { result.Message })
                 );
             }
 
@@ -99,10 +99,10 @@ namespace API.Controllers
         {
             if (productDto == null)
             {
-                return NotFound(new Error<string>(
+                return NotFound(new Error(
                         (int)HttpStatusCode.NotFound,
                         "Create Failed",
-                        "Product can not be null")
+                        new[] { "Product can not be null" })
                     );
             }          
             var searchResult = await _productService.GetProductDtoByIdAsync(productDto.Id);

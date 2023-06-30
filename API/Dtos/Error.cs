@@ -1,11 +1,13 @@
-﻿using System.Text.Json;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace API.Dtos
 {
-    public class Error<T> : BaseReponse
+    public class Error : BaseReponse
     {
-        public T Errors { get; set; }
-        public Error(int statusCode, string message, T errors) : base(false, message, statusCode)
+        public IEnumerable<string> Errors { get; set; }
+        public Error(int statusCode, string message, IEnumerable<string> errors) : base(false, message, statusCode)
         {
             Errors = errors;
         }

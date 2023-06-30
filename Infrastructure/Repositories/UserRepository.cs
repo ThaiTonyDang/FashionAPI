@@ -1,6 +1,8 @@
 ﻿using Infrastructure.AggregateModel;
+using Infrastructure.Dtos;
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Linq;
 using System.Net.WebSockets;
 
 namespace Infrastructure.Repositories
@@ -15,16 +17,26 @@ namespace Infrastructure.Repositories
             _roleManager = roleManager;
         }
 
-        public async Task<bool> ChangeUserPasswordAsync(User user, string password, string newPassword)
+        public async Task<ResultDto> ChangeUserPasswordAsync(User user, string password, string newPassword)
         {
             var result = await _userManager.ChangePasswordAsync(user, password, newPassword);
-            return result.Succeeded;
+            if (!result.Succeeded)
+            {
+                return new ErrorResult(string.Join(",", result.Errors));
+            }
+
+            return new SuccessResult("Change user's password successfully");
         }
 
-        public async Task<bool> CreateUserAsync(User user, string password)
+        public async Task<ResultDto> CreateUserAsync(User user, string password)
         {
             var result = await _userManager.CreateAsync(user, password);
-            return result.Succeeded;
+            if (!result.Succeeded)
+            {
+                return new ErrorResult(string.Join(",", result.Errors));
+            }
+
+            return new SuccessResult("Updated new user successfully");
         }
 
         public async Task<IEnumerable<string>> GetListRoles(User user)
@@ -44,10 +56,15 @@ namespace Infrastructure.Repositories
             return this._userManager.FindByIdAsync(userId);
         }
 
-        public async Task<bool> UpdateUserAsync(User user)
+        public async Task<ResultDto> UpdateUserAsync(User user)
         {
             var result = await _userManager.UpdateAsync(user);
-            return result.Succeeded;
+            if(!result.Succeeded)
+            {
+                return new ErrorResult(string.Join(",", result.Errors));
+            }
+
+            return new SuccessResult("Updated user successfully");
 
         }
 

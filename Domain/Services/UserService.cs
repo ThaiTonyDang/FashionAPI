@@ -1,15 +1,11 @@
-﻿using Domain.Dtos;
-using Domain.Dtos.Users;
-using Infrastructure.AggregateModel;
+﻿using Domain.Dtos.Users;
 using Infrastructure.Config;
 using Infrastructure.Dtos;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Text;
 
@@ -26,7 +22,7 @@ namespace Domain.Services
             _tokenConfig = options.Value;
         }
 
-        public async Task<bool> RegisterUserAsync(UserRegistrationDto registerUser)
+        public async Task<ResultDto> RegisterUserAsync(UserRegistrationDto registerUser)
         {
             var email = registerUser.Email.ToLower();
             var user = new User
@@ -77,7 +73,7 @@ namespace Domain.Services
             return userDto;
         }
 
-        public async Task<bool> UpdateUserAsync(string userId, UserInfoDto userInfo)
+        public async Task<ResultDto> UpdateUserAsync(string userId, UserInfoDto userInfo)
         {
             var user = await _userRepository.GetUserById(userId);
 
@@ -92,12 +88,12 @@ namespace Domain.Services
             return result;
         }
 
-        public async Task<bool> UpdateUserAvatarAsync(string userId, string avatar)
+        public async Task<ResultDto> UpdateUserAvatarAsync(string userId, string avatar)
         {
             var user =  await _userRepository.GetUserById(userId);
             if (user == null)
             {
-                return false;
+                return new ErrorResult("User is not found");
             }
 
             user.AvatarImage = avatar;
@@ -105,12 +101,12 @@ namespace Domain.Services
             return result;
         }
 
-        public async Task<bool> UpdateUserPasswordAsync(string userId, string password, string newPassword)
+        public async Task<ResultDto> UpdateUserPasswordAsync(string userId, string password, string newPassword)
         {
             var user = await _userRepository.GetUserById(userId);
             if(user == null)
             {
-                return false;
+                return new ErrorResult("User is not found");
             }
 
             var result = await _userRepository.ChangeUserPasswordAsync(user, password, newPassword);

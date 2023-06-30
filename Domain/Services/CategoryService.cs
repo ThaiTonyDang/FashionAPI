@@ -1,9 +1,6 @@
 ﻿using Domain.Dtos;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
-using SixLabors.ImageSharp;
-using System.Xml.Linq;
-using Utilities.GlobalHelpers;
 
 namespace Domain.Services
 {

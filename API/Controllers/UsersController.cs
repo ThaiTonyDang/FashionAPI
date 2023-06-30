@@ -1,15 +1,12 @@
 ﻿using API.Dtos;
-using Domain.Dtos;
 using Domain.Dtos.Users;
 using Domain.Services;
-using Infrastructure.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Utilities.GlobalHelpers;
 
 namespace API.Controllers
 {
@@ -30,42 +27,42 @@ namespace API.Controllers
         {
             if (user == null)
             {
-                return BadRequest(new Error<string>(
+                return BadRequest(new Error(
                         (int)HttpStatusCode.BadRequest,
                         "Register Failed",
-                        "User can not be null")
+                        new[] { "User can not be null" })
                     );
             }
 
             if (string.IsNullOrEmpty(user.Email))
             {
-                return BadRequest(new Error<string>(
+                return BadRequest(new Error(
                         (int)HttpStatusCode.BadRequest,
-                        "Register Failed",
-                        "Email can not be null or empty")
+                        "Register failed",
+                        new[] { "Email can not be null or empty" })
                     );
             }
 
             if (!user.Password.Equals(user.ConfirmPassword))
             {
-                return BadRequest(new Error<string>(
+                return BadRequest(new Error(
                         (int)HttpStatusCode.BadRequest,
-                        "Register Failed",
-                        "Password confirm is not match")
+                        "Register failed",
+                        new[] { "Password confirm is not match" })
                     );
             }
 
             var result = await this._userService.RegisterUserAsync(user);
-            if (!result)
+            if (!result.IsSuccess)
             {
-                return BadRequest(new Error<string>(
+                return StatusCode((int)HttpStatusCode.InternalServerError, new Error(
                         (int)HttpStatusCode.InternalServerError,
-                        "Register Failed",
-                        "Can't create new user")
-                    );
+                        "Register failed",
+                        new[] { result.Message })
+                );
             }
-            var response = new Success((int)HttpStatusCode.Created, "Created new user");
-            return Ok(response);
+
+            return Ok(new Success((int)HttpStatusCode.Created, result.Message));
         }
 
         [AllowAnonymous]
@@ -75,37 +72,33 @@ namespace API.Controllers
         {
             if (user == null)
             {
-                return BadRequest(new Error<string>(
+                return BadRequest(new Error(
                         (int)HttpStatusCode.BadRequest,
-                        "Login Failed",
-                        "User can not be null or empty")
+                        "Login failed",
+                        new[] { "User can not be null or empty" })
                     );
             }
             
             if(string.IsNullOrEmpty(user.Email))
             {
-                return BadRequest(new Error<string>(
+                return BadRequest(new Error(
                         (int)HttpStatusCode.BadRequest,
-                        "Email Incorrect ! Try again",
-                        "Email can not be null or empty")
+                        "Login failed",
+                        new[] { "Email can not be null or empty" })
                     );
             }
 
             var isValidated = await this._userService.ValidateUserAsync(user);
             if(!isValidated)
-                return Unauthorized(new Error<string>(
-                        (int)HttpStatusCode.BadRequest,
-                        "Username or Password are not correct",
-                        "Username or Password are not correct")
+                return Unauthorized(new Error(
+                        (int)HttpStatusCode.Unauthorized,
+                        "Login failed",
+                        new[] { "Username or Password are not correct" })
                     );
 
             var token = await this._userService.CreateTokenAsync(user);
-            var response = new SuccessData<string>(
-                    (int)HttpStatusCode.OK,
-                    "Login Successufully",
-                    token
-                );
-            return Ok(response);
+
+            return Ok(new SuccessData<string>((int)HttpStatusCode.OK, "Login Sucessufully", token));
         }
 
         [Authorize]
@@ -115,81 +108,99 @@ namespace API.Controllers
         {
             var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
             var user = await _userService.GetUserInfo(userId);
+
             if (user == null)
-                return NotFound(new Error<string>(
+                return NotFound(new Error(
                         (int)HttpStatusCode.NotFound,
-                        "User null",
-                        "User Can not found")
-                    );
-            return Ok(new
-            {
-                StatusCode = (int)HttpStatusCode.OK,
-                IsSuccess = true,
-                Data = user
-            });
+                        "Retrive user failed",
+                        new[] { "User can not be found" })
+                );
+
+            return Ok(new SuccessData<UserInfoDto>((int)HttpStatusCode.OK, "Get user's info sucessfully", user));
         }
 
         [Authorize]
-        [HttpPut]
+        [HttpPatch]
         [Route("profile")]
         public async Task<IActionResult> UpdateProfileAsync(UserInfoDto userDto)
         {
             if (userDto == null)
             {
-                return BadRequest(new Error<string>(
+                return BadRequest(new Error(
                         (int)HttpStatusCode.BadRequest,
-                        "Update Failed",
-                        "User can not be null or empty")
+                        "Update user's profile failed",
+                        new[] { "User can not be null or empty" })
                     );
             }
 
             var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-            var isSuccess = await this._userService.UpdateUserAsync(userId, userDto);
-            if (!isSuccess)
+            var result = await this._userService.UpdateUserAsync(userId, userDto);
+            if (!result.IsSuccess)
             {
-                return BadRequest(new
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    IsSuccess = false,
-                });
+                return StatusCode((int)HttpStatusCode.InternalServerError, new Error(
+                        (int)HttpStatusCode.InternalServerError,
+                        "Update user failed",
+                        new[] { result.Message })
+                );
             }
 
-            return Ok(new
-            {
-                StatusCode = (int)HttpStatusCode.OK,
-                IsSuccess = true,
-            });
+            return Ok(new Success((int)HttpStatusCode.OK, result.Message));
         }
 
         [Authorize]
-        [HttpPost]
-        [Route("reset-password")]
+        [HttpPatch]
+        [Route("profile/avatar")]
+        public async Task<IActionResult> UpdateAvatarAsync(string avatar)
+        {
+            if (string.IsNullOrEmpty(avatar))
+            {
+                return BadRequest(new Error(
+                        (int)HttpStatusCode.BadRequest,
+                        "Update user's profile failed",
+                        new[] { "Avatar can not be null or empty" })
+                    );
+            }
+
+            var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            var result = await this._userService.UpdateUserAvatarAsync(userId, avatar);
+            if (!result.IsSuccess)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, new Error(
+                        (int)HttpStatusCode.InternalServerError,
+                        "Update user failed",
+                        new[] { result.Message })
+                );
+            }
+
+            return Ok(new Success((int)HttpStatusCode.OK, result.Message));
+        }
+
+        [Authorize]
+        [HttpPatch]
+        [Route("profile/change-password")]
         public async Task<IActionResult> ChangePasswordAsync(UserPasswordChangeDto userPasswordDto)
         {
             if(userPasswordDto == null || !userPasswordDto.IsPasswordValidated())
             {
-                return BadRequest(new Error<string>(
+                return BadRequest(new Error(
                         (int)HttpStatusCode.BadRequest,
                         "Change User's Password Failed",
-                        "Confirm Password does not match")
+                        new[] { "Confirm Password does not match" })
                     );
             }
 
             var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
             var result = await _userService.UpdateUserPasswordAsync(userId, userPasswordDto.CurrentPassword, userPasswordDto.NewPassword);
-            if(!result)
-                return BadRequest(new
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    IsSuccess = false,
-                    Message = "Old Password Not true"
-                });
-            return Ok(new
+            if(!result.IsSuccess)
             {
-                StatusCode = (int)HttpStatusCode.OK,
-                IsSuccess = true,
-                Message = "Change Password Success"
-            });
+                return StatusCode((int)HttpStatusCode.InternalServerError, new Error(
+                        (int)HttpStatusCode.InternalServerError,
+                        "Update user failed",
+                        new[] { result.Message })
+                );
+            }
+                
+            return Ok(new Success((int)HttpStatusCode.OK, result.Message));
         }
     }
 }

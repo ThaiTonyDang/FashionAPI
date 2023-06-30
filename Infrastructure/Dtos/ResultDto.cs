@@ -22,4 +22,15 @@
             this.Message = message;
         }
     }
+
+    public class SuccessDataResult<T> : ResultDto
+    {
+        public T Data { get; set; }
+        public SuccessDataResult(string message, T data)
+        {
+            this.IsSuccess = true;
+            this.Message = message;
+            Data = data;
+        }
+    }
 }
