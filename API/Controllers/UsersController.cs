@@ -122,7 +122,7 @@ namespace API.Controllers
         [Authorize]
         [HttpPatch]
         [Route("profile")]
-        public async Task<IActionResult> UpdateProfileAsync(UserProfileDto userDto)
+        public async Task<IActionResult> UpdateProfileAsync([FromBody] UserProfileDto userDto)
         {
             if (userDto == null)
             {
@@ -150,7 +150,7 @@ namespace API.Controllers
         [Authorize]
         [HttpPatch]
         [Route("profile/avatar")]
-        public async Task<IActionResult> UpdateAvatarAsync(string avatar)
+        public async Task<IActionResult> UpdateAvatarAsync([FromBody] string avatar)
         {
             if (string.IsNullOrEmpty(avatar))
             {

@@ -1,14 +1,12 @@
 ﻿using API.Dtos;
+using API.Dtos.Files;
 using API.Extensions;
 using Domain.Dtos;
 using Domain.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Utilities.GlobalHelpers;
@@ -21,7 +19,6 @@ namespace API.Controllers
     public class FileController : ControllerBase
     {
         private readonly IFileService _fileService;
-        private string _fileFolder;
         public FileController(IFileService fileService)
         {
             this._fileService = fileService;
@@ -52,16 +49,16 @@ namespace API.Controllers
             var fileName = await _fileService.SaveAsync(fileDto);
             var sublink = HTTTP.SLUG;
             var baseUrl = HttpContext.Request.BaseUrl();
-            var linkFileName = _fileService.GetFileLink(baseUrl, sublink, fileName);
+            var fileLink = _fileService.GetFileLink(baseUrl, sublink, fileName);
             
-            return Ok(new SuccessData<List<string>>(
+            return Ok(new SuccessData<FileResponse>(
                 (int)HttpStatusCode.OK,
                 "Save File Successfully",
-                new List<string>
+                new FileResponse
                 {
-                    fileName,
-                    linkFileName
-                }
+                    FileName = fileName,
+                    FileLink = fileLink
+                } 
             ));
 
         }
