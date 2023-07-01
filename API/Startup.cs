@@ -17,6 +17,7 @@ using System.Text.Json;
 using API.ExceptionMiddleware;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.IdentityModel.Tokens.Jwt;
+using Domain.Services.FileServices;
 
 namespace API
 {
@@ -60,6 +61,7 @@ namespace API
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICartRepository, CartRepository>();
+            services.AddScoped<IImageService, ImageService>();
 
             services.AddIdentityServices();
             services.AddIdentityTokenConfig(Configuration);

@@ -1,4 +1,6 @@
-﻿using API.Extensions;
+﻿using API.Dtos;
+using API.Extensions;
+using Domain.Dtos;
 using Domain.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -25,81 +27,79 @@ namespace API.Controllers
             this._fileService = fileService;
         }
 
-        [HttpPost("upload")]
-        public async Task<IActionResult> SaveFile([FromForm] IFormFile file)
+        //[Authorize]
+        [HttpPost]
+        [Route("upload")]
+        public async Task<IActionResult> SaveFileAsync([FromForm] IFormFile file)
         {
-            var dataList = new List<string> { };
-            if(file == null)
+            if(file == null || file.Length <= 0)
             {
-                return BadRequest(new
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    IsSuccess = false,
-                    Message = "Please Upload File"
-                });
-            }
-            
-            var baseUrl = HttpContext.Request.BaseUrl();
-            var fileName = _fileService.GetFullFileName(file.FileName);
-
-            if (file.ContentType.Contains("image"))
-            {
-                fileName = _fileService.GetFullImageName(file.FileName, SIZE.Width, SIZE.Height);
-                _fileFolder = GetFolderNameByDateCreate(fileName);
-                var stream = file.OpenReadStream();
-                _fileService.ResizeImage(stream, fileName, _fileFolder);
-            }
-            if (!file.ContentType.Contains("image"))
-            {
-                var data = await file.GetBytes();
-                await this._fileService.SaveFileAsync(fileName, data, _fileFolder);
+                return BadRequest(new Error(
+                    (int)HttpStatusCode.BadRequest,
+                    "Upload file failed",
+                    new[] { "Please Upload File" }));
             }
 
+            var fileDto = new FileDto
+            {
+                ContentLength = file.Length,
+                ContentType = file.ContentType,
+                Data = await file.GetBytes(),
+                FileName = file.FileName,
+                Stream = file.OpenReadStream()
+            };
+
+            var fileName = await _fileService.SaveAsync(fileDto);
             var sublink = HTTTP.SLUG;
-            var link = this._fileService.GetFileLink(baseUrl, sublink, fileName);
-            dataList.Add(fileName);
-            dataList.Add(link);             
+            var baseUrl = HttpContext.Request.BaseUrl();
+            var linkFileName = _fileService.GetFileLink(baseUrl, sublink, fileName);
             
-            return Ok(new
-            {
-                Data = dataList
-            });
+            return Ok(new SuccessData<List<string>>(
+                (int)HttpStatusCode.OK,
+                "Save File Successfully",
+                new List<string>
+                {
+                    fileName,
+                    linkFileName
+                }
+            ));
 
         }
 
-        [HttpGet($"/{HTTTP.SLUG}/{{fileName}}")]
-        public async Task<IActionResult> GetImage(string fileName)
-        {           
-            if (string.IsNullOrEmpty(fileName))
+        [HttpGet]
+        [Route($"/{HTTTP.SLUG}/{{fileName}}")]
+        public async Task<IActionResult> GetFileAsync(string fileName)
+        {    
+            var extension = Path.GetExtension(fileName);
+            if (string.IsNullOrEmpty(extension))
             {
-                return BadRequest(new
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    Message = "File's Name Cannot Be Empty !"
-                });
-            }
-
-            _fileFolder = GetFolderNameByDateCreate(fileName);
-            var imageBytes = await _fileService.GetFileBytesAsync(fileName, _fileFolder);
-            if (imageBytes == default(byte[]))
-            {
-                return NotFound(new
-                {
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Message = "Image Not Found !"
-                });
+                return BadRequest(new Error(
+                    (int)HttpStatusCode.BadRequest,
+                    "Get file name error",
+                    new[] { "File's name cannot be empty !" }
+                ));
             }
 
             string contentType = fileName.GetContentType();
-            return File(imageBytes, contentType);
+            var fileDto = new FileDto
+            {
+                FileName = fileName,
+                ContentType = contentType
+            };
+
+            var data = await this._fileService.GetAsync(fileDto);
+            if (data == default(byte[]))
+            {
+                return NotFound(new Error
+                (
+                    (int)HttpStatusCode.NotFound,
+                    "Get file name error",
+                    new[] { "File is not found !" }
+                ));
+            }
+
+            return File(data, contentType);
         }     
         
-        private string GetFolderNameByDateCreate(string fileName)
-        {
-            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-            var resultstring = new string(fileNameWithoutExtension.ToCharArray().Reverse().ToArray());
-            var folderName = new string(resultstring.Substring(6, 8).ToCharArray().Reverse().ToArray());
-            return folderName;
-        }
     }
 }

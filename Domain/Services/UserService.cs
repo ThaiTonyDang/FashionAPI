@@ -58,22 +58,23 @@ namespace Domain.Services
             return await _userRepository.ValidationUser(user, userLogin.Password);
         }
 
-        public async Task<UserInfoDto> GetUserInfo(string userId)
+        public async Task<UserProfileDto> GetUserProfie(string userId)
         {
             var user = await _userRepository.GetUserById(userId);
-            var userDto = new UserInfoDto
+            var userDto = new UserProfileDto
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 PhoneNumber = user.PhoneNumber,
                 Address = user.Address,
+                AvatarImage = user.AvatarImage,
                 DateOfBirth = user.DateOfBirth
             };
 
             return userDto;
         }
 
-        public async Task<ResultDto> UpdateUserAsync(string userId, UserInfoDto userInfo)
+        public async Task<ResultDto> UpdateUserAsync(string userId, UserProfileDto userInfo)
         {
             var user = await _userRepository.GetUserById(userId);
 

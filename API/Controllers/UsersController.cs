@@ -107,7 +107,7 @@ namespace API.Controllers
         public async Task<IActionResult> GetUser()
         {
             var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-            var user = await _userService.GetUserInfo(userId);
+            var user = await _userService.GetUserProfie(userId);
 
             if (user == null)
                 return NotFound(new Error(
@@ -116,13 +116,13 @@ namespace API.Controllers
                         new[] { "User can not be found" })
                 );
 
-            return Ok(new SuccessData<UserInfoDto>((int)HttpStatusCode.OK, "Get user's info sucessfully", user));
+            return Ok(new SuccessData<UserProfileDto>((int)HttpStatusCode.OK, "Get user's info sucessfully", user));
         }
 
         [Authorize]
         [HttpPatch]
         [Route("profile")]
-        public async Task<IActionResult> UpdateProfileAsync(UserInfoDto userDto)
+        public async Task<IActionResult> UpdateProfileAsync(UserProfileDto userDto)
         {
             if (userDto == null)
             {

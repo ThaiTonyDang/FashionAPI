@@ -10,8 +10,8 @@ namespace Domain.Services
         Task<ResultDto> RegisterUserAsync(UserRegistrationDto user);
         Task<bool> ValidateUserAsync(UserLoginDto user);
         Task<string> CreateTokenAsync(UserLoginDto user);
-        Task<UserInfoDto> GetUserInfo(string userId);
-        Task<ResultDto> UpdateUserAsync(string userId, UserInfoDto userInfo);
+        Task<UserProfileDto> GetUserProfie(string userId);
+        Task<ResultDto> UpdateUserAsync(string userId, UserProfileDto userInfo);
         Task<ResultDto> UpdateUserAvatarAsync(string userId, string avatar);
         Task<ResultDto> UpdateUserPasswordAsync(string userId, string password, string newPassword);
     }

@@ -1,8 +1,5 @@
 ﻿using Infrastructure.Config;
-using Infrastructure.Models;
 using Microsoft.Extensions.Options;
-using System.IO;
-using Utilities.GlobalHelpers;
 
 namespace Infrastructure.Repositories
 {
