@@ -27,7 +27,7 @@ namespace API.Controllers
             this._fileService = fileService;
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost]
         [Route("upload")]
         public async Task<IActionResult> SaveFileAsync([FromForm] IFormFile file)
