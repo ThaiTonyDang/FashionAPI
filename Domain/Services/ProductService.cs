@@ -1,7 +1,9 @@
 ﻿using Domain.Dtos;
+using Infrastructure.DataContext;
 using Infrastructure.Dtos;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
+using System.Xml.Linq;
 
 namespace Domain.Services
 {
@@ -11,25 +13,6 @@ namespace Domain.Services
         public ProductService(IProductRepository productRepository)
 		{
 			_productRepository = productRepository;
-		}
-
-		public async Task<List<ProductDto>> GetProductListAsync()
-		{
-			var products = await _productRepository.GetProductListAsync();
-			var listProducts = products.Select(p => new ProductDto
-			{
-				Id = p.Id,
-				Name = p.Name,
-				Price = p.Price,
-				Provider = p.Provider,
-                MainImageName = p.MainImageName,
-                IsEnabled = p.IsEnabled,
-                CategoryId = p.CategoryId,
-                Description = p.Description,
-				QuantityInStock = p.QuantityInStock,
-			}).ToList();
-
-			return listProducts;
 		}
 
 		public async Task<ResultDto> CreateProductAsync(ProductDto productDto)
@@ -48,6 +31,7 @@ namespace Domain.Services
                 CategoryId = productDto.CategoryId,
                 Description = productDto.Description,
 				CreatedDate = DateTime.UtcNow,
+				ModifiedDate = DateTime.UtcNow,
 				QuantityInStock = productDto.QuantityInStock,
 			};
 
@@ -55,61 +39,62 @@ namespace Domain.Services
 			return result;
 		}
 
-		public async Task<Tuple<bool, string>> UpdateProductAsync(ProductDto productDto)
+		public async Task<ResultDto> UpdateProductAsync(Guid productId, ProductDto productDto)
 		{
-			var imagePath = productDto.MainImageName;
-			if (!string.IsNullOrEmpty(productDto.MainImageName))
-			{
-				imagePath = productDto.MainImageName;
-			}
-			var product = new Product
-			{
-				Id = productDto.Id,
-				Name = productDto.Name,
-				Price = productDto.Price,
-				Provider = productDto.Provider,
-                MainImageName = imagePath,
-                IsEnabled = productDto.IsEnabled,
-                CategoryId = productDto.CategoryId,
-                Description = productDto.Description,
-				ModifiedDate = productDto.ModifiedDate,
-				QuantityInStock= productDto.QuantityInStock,		
-			};
+			var existProduct = await _productRepository.CheckExitDuplicateProduct(productId,
+																				productDto.Name,
+																				productDto.Provider);
+            if (existProduct)
+            {
+                return new ErrorResult("Product name with provider is already exists");
+            }
+
+            var getProductResult = await _productRepository.GetProductByIdAsync(productId);
+            if (!getProductResult.IsSuccess)
+            {
+                return getProductResult;
+            }
+
+            var product = getProductResult.ToSuccessDataResult<Product>().Data;
+
+			product.Name = productDto.Name;
+			product.Price = productDto.Price;
+			product.Provider = productDto.Provider;
+			product.MainImageName = productDto.MainImageName;
+			product.IsEnabled = productDto.IsEnabled;
+			product.CategoryId = productDto.CategoryId;
+			product.Description = productDto.Description;
+			product.ModifiedDate = DateTime.UtcNow;
+			product.QuantityInStock = productDto.QuantityInStock;
 
 			var result = await _productRepository.UpdateAsync(product);
-            var isSuccess = result.Item1;
-            var message = result.Item2;
-
-            return Tuple.Create(isSuccess, message);
+			return result;
 		}
 
-		public async Task<Tuple<bool, string>> DeleteProductAsync(Guid id)
+		public async Task<ResultDto> DeleteProductAsync(Guid productId)
 		{
-            if (id == default)
+            var getProductResult = await _productRepository.GetProductByIdAsync(productId);
+            if (!getProductResult.IsSuccess)
             {
-                return Tuple.Create(false, "Id Invalid ! Delete Fail!");
+                return new ErrorResult("Delete product failed cause product is not found");
             }
-            var result = await _productRepository.DeleteAsync(id);
-            var isSuccess = result.Item1;
-            var message = result.Item2;
 
-            return Tuple.Create(isSuccess, message);
+            var product = getProductResult.ToSuccessDataResult<Product>().Data;
+
+            var result = await _productRepository.DeleteAsync(product);
+            return result;
         }
 
-        public async Task<Tuple<ProductDto, string>> GetProductDtoByIdAsync(Guid id)
+        public async Task<ResultDto> GetProductByIdAsync(Guid productId)
 		{
-            if (id == default)
-            {
-                return Tuple.Create(default(ProductDto), "Id Invalid ! Cannot Get Prodcut !");
-            }
+            var result = await _productRepository.GetProductByIdAsync(productId);
 
-            var result = await _productRepository.GetProductByIdAsync(id);
-            var product = result.Item1;
-            var message = result.Item2;
-            if (product == null)
-			{ 
-                return Tuple.Create(default(ProductDto), $"{message}");
-            }
+			if(!result.IsSuccess)
+			{
+				return result;
+			}
+            
+			var product = result.ToSuccessDataResult<Product>().Data;
 			var productDto = new ProductDto
 			{
 				Id = product.Id,
@@ -125,14 +110,13 @@ namespace Domain.Services
 				CreateDate = product.CreatedDate
 			};
 
-		    return Tuple.Create(productDto, message);
-
+			return new SuccessDataResult<ProductDto>(result.Message, productDto);
         }
 
-        public async Task<List<ProductDto>> GetPagingProductListAsync(int currentPage, int pageSize)
+        public async Task<List<ProductDto>> GetProductsAsync(int currentPage, int pageSize)
         {
-            var listProduct = await _productRepository.GetPagingProductListAsync(currentPage, pageSize);
-            var listProductViewModel = listProduct.Select(product => new ProductDto()
+            var products = await _productRepository.GetProductsAsync(currentPage, pageSize);
+            var listProducts = products.Select(product => new ProductDto()
             {
                 Id = product.Id,
                 Name = product.Name,
@@ -145,12 +129,12 @@ namespace Domain.Services
 				CreateDate = product.CreatedDate,
             }).ToList();
 
-            return listProductViewModel;
+            return listProducts;
         }
 
-        public async Task<int> GetTotalItems()
+        public async Task<int> GetCountAsync()
         {
-			return await _productRepository.GetTotalItems();
+			return await _productRepository.GetCountAsync();
         }
     }
 }

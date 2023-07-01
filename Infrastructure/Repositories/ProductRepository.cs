@@ -56,101 +56,64 @@ namespace Infrastructure.Repositories
             return list;
         }
 
-        public async Task<Tuple<bool, string>> UpdateAsync(Product product)
+        public async Task<ResultDto> UpdateAsync(Product product)
         {
-            try
+            _appDbContext.Products.Update(product);
+            var result = await _appDbContext.SaveChangesAsync();
+            if(result == 0)
             {
-                if (product == null)
-                {
-                    throw new ProductException("Product can not be null");
-                }
-                if (product.Id == default(Guid) || product.CategoryId == default(Guid))
-                   return Tuple.Create(false, "Product Id Or Category Id Invalid !");
-                var productEntity = _appDbContext.Products.Where(p => p.Id != product.Id 
-                                                           && p.Name == product.Name && p.Provider == product.Provider)
-                                                           .FirstOrDefault();
-                if (productEntity != null) return Tuple.Create(false, "Product Name And Provider Already Exists! Try Again");
-
-                var searchResult = await GetProductByIdAsync(product.Id);
-                productEntity = searchResult.Item1;
-                var message = searchResult.Item2;
-
-                if (productEntity == null)
-                {
-                    return Tuple.Create(false , message + " Updated Product Failed !");
-                }
-                productEntity.Id = product.Id;
-                productEntity.Name = product.Name;
-                productEntity.Provider = product.Provider;
-                productEntity.Price = product.Price;
-                productEntity.Description = product.Description;
-                productEntity.CategoryId = product.CategoryId;
-                productEntity.MainImageName = product.MainImageName;
-                productEntity.QuantityInStock = product.QuantityInStock;
-                productEntity.IsEnabled = product.IsEnabled;
-                productEntity.ModifiedDate = product.ModifiedDate;
-
-                _appDbContext.Products.Update(productEntity);
-                var result = _appDbContext.SaveChanges();
-                return Tuple.Create(result > 0, "Updated Product Success !");                         
+                return new ErrorResult("No product record is updated");
             }
-            catch (Exception exception)
-            {
-                return Tuple.Create(false, $"An Error Occurred : {exception.Message}! Updated Product Fail !");
-            }
+
+            return new SuccessResult("Update product successfully");
         }
 
-        public async Task<Tuple<bool, string>> DeleteAsync(Guid id)
+        public Task<bool> CheckExitDuplicateProduct(Guid productId, string productName, string provider)
         {
-            try
-            {
-                var searchResult = await GetProductByIdAsync(id);
-
-                var productEntity = searchResult.Item1;
-                var message = searchResult.Item2;
-
-                if (productEntity == null)
-                {
-                    return Tuple.Create(false, message + " Deleted Product Failed !");
-                }
-                _appDbContext.Products.Remove(productEntity);
-                var result = _appDbContext.SaveChanges();
-                return Tuple.Create(result > 0, "Deleled Product Success !");
-            }
-            catch (Exception exception)
-            {
-                return Tuple.Create(false, $"An Error Occurred : {exception.InnerException.Message}!" +
-                                   $" Deleted Product Failed !");
-            }
+            var existProduct = _appDbContext.Products
+                                             .Where(p => p.Id != productId
+                                                && p.Name == productName
+                                                && p.Provider == provider)
+                                             .FirstOrDefault();
+            return Task.FromResult(existProduct != null);
         }
 
-        public async Task<Tuple<Product, string>> GetProductByIdAsync(Guid id)
+        public async Task<ResultDto> DeleteAsync(Product product)
         {
-            try
+            _appDbContext.Products.Remove(product);
+            var result = await _appDbContext.SaveChangesAsync();
+            if (result == 0)
             {
-                var product = await _appDbContext.Products.FindAsync(id);
-
-                if (product == null) return Tuple.Create(default(Product), "Not Found! Product Does Not Exist !");
-
-                return Tuple.Create(product, "Found the Success Product");
-            }
-            catch (Exception exception)
-            {
-                return Tuple.Create(default(Product), $"{exception.Message}! Product Does Not Exist !");
+                return new ErrorResult("No product is deleted");
             }
 
+            return new SuccessResult("Delete product successfully");
         }
 
-        public async Task<List<Product>> GetPagingProductListAsync(int currentPage, int pageSize)
+        public async Task<ResultDto> GetProductByIdAsync(Guid productId)
         {
-            var products = await _appDbContext.Products.OrderBy(p => p.Name)
+            var product = await _appDbContext.Products.FindAsync(productId);
+
+            if (product == null) 
+            {
+                return new ErrorResult("Product is not found!");
+            } 
+
+            return new SuccessDataResult<Product>("Product is founded", product);
+        }
+
+        public async Task<List<Product>> GetProductsAsync(int currentPage, int pageSize)
+        {
+            var products = await _appDbContext.Products.AsNoTracking()
+                                                       .AsQueryable()
+                                                       .OrderBy(p => p.Name)
                                                        .Skip((currentPage - 1) * pageSize)
-                                                       .Take(pageSize).AsQueryable()
+                                                       .Take(pageSize)
                                                        .ToListAsync();
             return products;
         }
 
-        public async Task<int> GetTotalItems()
+        public async Task<int> GetCountAsync()
         {
             return await _appDbContext.Products.CountAsync();
         }

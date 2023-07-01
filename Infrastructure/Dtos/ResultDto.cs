@@ -4,6 +4,21 @@
     {
         public bool IsSuccess { get; set; }
         public string Message { get; set; }
+
+        public SuccessResult ToSuccessResult()
+        {
+            return new SuccessResult(this.Message);
+        }
+
+        public ErrorResult ToErrorResult()
+        {
+            return new ErrorResult(this.Message);
+        }
+
+        public SuccessDataResult<T> ToSuccessDataResult<T>()
+        {
+            return (SuccessDataResult<T>)this;
+        }
     }
 
     public class ErrorResult : ResultDto

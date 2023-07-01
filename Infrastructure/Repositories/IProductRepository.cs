@@ -5,12 +5,13 @@ namespace Infrastructure.Repositories
 {
     public interface IProductRepository
     {
-        public Task<ResultDto> CreateAsync(Product product);
-        public Task<List<Product>> GetProductListAsync();
-        public Task<List<Product>> GetPagingProductListAsync(int currentPage, int pageSize);
-        public Task<Tuple<bool, string>> UpdateAsync(Product product);
-        public Task<Tuple<bool, string>> DeleteAsync(Guid id);
-        public Task<Tuple<Product, string>> GetProductByIdAsync(Guid id);
-        public Task<int> GetTotalItems();
+        Task<ResultDto> CreateAsync(Product product);
+        Task<List<Product>> GetProductListAsync();
+        Task<List<Product>> GetProductsAsync(int currentPage, int pageSize);
+        Task<ResultDto> UpdateAsync(Product product);
+        Task<bool> CheckExitDuplicateProduct(Guid productId, string productName, string provider);
+        Task<ResultDto> DeleteAsync(Product product);
+        Task<ResultDto> GetProductByIdAsync(Guid productId);
+        Task<int> GetCountAsync();
     }
 }
