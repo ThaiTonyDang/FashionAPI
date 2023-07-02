@@ -19,13 +19,15 @@ namespace API.Extensions
                 options.Password.RequiredUniqueChars = 1;
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedEmail = true;
+                options.SignIn.RequireConfirmedAccount = false;
             })
                 .AddRoles<Role>()
                 .AddRoleManager<RoleManager<Role>>()
                 .AddSignInManager<SignInManager<User>>()
                 .AddRoleValidator<RoleValidator<Role>>()
                 .AddUserManager<UserManager<User>>()
-                .AddEntityFrameworkStores<AppDbContext>();
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
         }
     }
 }

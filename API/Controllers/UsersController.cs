@@ -89,12 +89,15 @@ namespace API.Controllers
                     );
             }
 
-            var isValidated = await this._userService.ValidateUserAsync(user);
-            if(!isValidated)
+            var result = await this._userService.ValidateUserAsync(user);
+            var isValidated = result.Item1;
+            var message = result.Item2;
+            if (!isValidated)
                 return Unauthorized(new Error<string>(
                         (int)HttpStatusCode.BadRequest,
-                        "Username or Password are not correct",
-                        "Username or Password are not correct")
+                        message,
+                        "Login Fail !"
+                        )
                     );
 
             var token = await this._userService.CreateTokenAsync(user);
