@@ -62,7 +62,6 @@ namespace API
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICartRepository, CartRepository>();
-
             services.AddIdentityServices();
             services.AddIdentityTokenConfig(Configuration);
             services.AddTokenAuthentication(Configuration);
@@ -83,7 +82,6 @@ namespace API
             }
 
             app.UseMiddleware<ExceptionHandleMiddleware>();
-
             var fileConfig = Configuration.GetSection("FileConfig");
             if (fileConfig.Get<FileConfig>() != null)
             {
@@ -108,8 +106,6 @@ namespace API
             {
                 endpoints.MapControllers();
             });
-
-
             app.UseHealthChecks("/health");
         }
     }

@@ -37,7 +37,8 @@ namespace Domain.Services
                 Address = registerUser.Address
             };
 
-            var result = await _userRepository.CreateUserAsync(user, registerUser.Password);
+            var roles = registerUser.Roles;
+            var result = await _userRepository.CreateUserAsync(user, registerUser.Password, roles);
             return result;
         }
 
@@ -50,14 +51,15 @@ namespace Domain.Services
             return token;
         }
 
-        public async Task<bool> ValidateUserAsync(UserDto userLogin)
+        public async Task<Tuple<bool, string>> ValidateUserAsync(UserDto userLogin)
         {
             var user = new User
             {
-                Email = userLogin.Email
+                Email = userLogin.Email,
             };
 
-            return await _userRepository.ValidationUser(user, userLogin.Password);
+            var result = await _userRepository.ValidationUser(user, userLogin.Password);
+            return result;
         }
 
         private SigningCredentials GetSigningCredentials()
@@ -153,7 +155,7 @@ namespace Domain.Services
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 Address = user.Address,
-                Birthday = user.DateOfBirth
+                Birthday = user.DateOfBirth,               
             };
 
             return userDto;
