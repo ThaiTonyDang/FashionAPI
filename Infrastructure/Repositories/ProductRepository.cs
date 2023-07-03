@@ -15,9 +15,11 @@ namespace Infrastructure.Repositories
     public class ProductRepository : IProductRepository        
     {
         private readonly AppDbContext _appDbContext;
-        public ProductRepository(AppDbContext appDbContext)
+        private readonly ISubImageRepository _subImageRepository;
+        public ProductRepository(AppDbContext appDbContext, ISubImageRepository subImageRepository)
         {
             _appDbContext = appDbContext;
+            _subImageRepository = subImageRepository;
         }
 
         public async Task<Result> CreateAsync(Product product)
@@ -52,25 +54,20 @@ namespace Infrastructure.Repositories
 
         public async Task<List<Product>> GetProductListAsync()
         {
-            var list = await _appDbContext.Products.ToListAsync();
-            return list;
+            var qr = (from p in _appDbContext.Products select p)
+                     .Include(p => p.SubImages);
+
+            var products = (await qr.ToListAsync()).ToList();
+            return products;
         }
 
         public async Task<Tuple<bool, string>> UpdateAsync(Product product)
         {
             try
             {
-                if (product == null)
-                {
-                    throw new ProductException("Product can not be null");
-                }
-                if (product.Id == default(Guid) || product.CategoryId == default(Guid))
-                   return Tuple.Create(false, "Product Id Or Category Id Invalid !");
-                var productEntity = _appDbContext.Products.Where(p => p.Id != product.Id 
-                                                           && p.Name == product.Name && p.Provider == product.Provider)
-                                                           .FirstOrDefault();
+                var productEntity = _appDbContext.Products.Where(p => p.Id != product.Id && p.Name == product.Name && p.Provider == product.Provider)
+                                                          .FirstOrDefault();
                 if (productEntity != null) return Tuple.Create(false, "Product Name And Provider Already Exists! Try Again");
-
                 var searchResult = await GetProductByIdAsync(product.Id);
                 productEntity = searchResult.Item1;
                 var message = searchResult.Item2;
@@ -89,6 +86,14 @@ namespace Infrastructure.Repositories
                 productEntity.QuantityInStock = product.QuantityInStock;
                 productEntity.IsEnabled = product.IsEnabled;
                 productEntity.ModifiedDate = product.ModifiedDate;
+
+                var subs = product.SubImages;
+
+                foreach (var item in subs)
+                {
+                    var subUpdate = await  _subImageRepository.UpdateSubImage(item);
+                    if (!subUpdate) return Tuple.Create(false, "Update SubImage Fail !"); ;
+                }
 
                 _appDbContext.Products.Update(productEntity);
                 var result = _appDbContext.SaveChanges();
@@ -129,6 +134,8 @@ namespace Infrastructure.Repositories
             try
             {
                 var product = await _appDbContext.Products.FindAsync(id);
+                var subList = _appDbContext.SubImages.ToList().Where(s => s.ProductId == id).ToList(); ;
+                product.SubImages = subList;
 
                 if (product == null) return Tuple.Create(default(Product), "Not Found! Product Does Not Exist !");
 
@@ -145,7 +152,7 @@ namespace Infrastructure.Repositories
         {
             var products = await _appDbContext.Products.OrderBy(p => p.Name)
                                                        .Skip((currentPage - 1) * pageSize)
-                                                       .Take(pageSize).AsQueryable()
+                                                       .Take(pageSize).Include(p =>p.SubImages).AsQueryable()
                                                        .ToListAsync();
             return products;
         }
