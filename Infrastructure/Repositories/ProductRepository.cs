@@ -143,7 +143,9 @@ namespace Infrastructure.Repositories
 
         public async Task<List<Product>> GetPagingProductListAsync(int currentPage, int pageSize)
         {
-            var products = await _appDbContext.Products.OrderBy(p => p.Name)
+            var products = await _appDbContext.Products.Include(x => x.Category)
+                                                       .AsNoTracking() 
+                                                       .OrderByDescending(p => p.CreatedDate)
                                                        .Skip((currentPage - 1) * pageSize)
                                                        .Take(pageSize).AsQueryable()
                                                        .ToListAsync();

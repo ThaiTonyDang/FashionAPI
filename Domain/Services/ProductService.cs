@@ -140,6 +140,7 @@ namespace Domain.Services
                 Price = product.Price,
                 Description = product.Description,
                 CategoryId = product.CategoryId,
+				CategoryName = product.Category.Name,
                 MainImageName = product.MainImageName,
 				QuantityInStock = product.QuantityInStock,
 				CreateDate = product.CreatedDate,
