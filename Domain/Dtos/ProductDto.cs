@@ -1,5 +1,4 @@
-﻿using Infrastructure.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Dtos
 {
@@ -30,6 +29,5 @@ namespace Domain.Dtos
         public int QuantityInOrder { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime ModifiedDate { get; set; }
-        public List<SubImagesDto> SubImages { get; set; }
     }
 }

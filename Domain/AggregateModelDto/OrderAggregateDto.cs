@@ -9,5 +9,6 @@ namespace Domain.AggregateModelDto
     public class OrderAggregateDto :BaseInformationDto
     {
         public int OrderProductsQuantity { get; set; }
+        public double Discount { get; set; }
     }
 }

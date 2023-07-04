@@ -76,8 +76,6 @@ namespace Domain.Services
 				QuantityInStock= productDto.QuantityInStock,		
 			};
 
-			product.SubImages = GetListSubImage(productDto);
-
 			var result = await _productRepository.UpdateAsync(product);
             var isSuccess = result.Item1;
             var message = result.Item2;
@@ -126,9 +124,9 @@ namespace Domain.Services
 				ModifiedDate = product.ModifiedDate,
 				CreateDate = product.CreatedDate
 			};
-			productDto.SubImages = GetListSubImageDto(product);
 
 		    return Tuple.Create(productDto, message);
+
         }
 
         public async Task<List<ProductDto>> GetPagingProductListAsync(int currentPage, int pageSize)
@@ -154,32 +152,5 @@ namespace Domain.Services
         {
 			return await _productRepository.GetTotalItems();
         }
-
-		private List<SubImage> GetListSubImage(ProductDto productDto)
-		{
-			var subImageDtos = productDto.SubImages;
-			var subImages = subImageDtos.Select(s => new SubImage
-			{
-				Id = s.Id,
-				ImageName = s.ImageName,
-				ProductId = s.ProductId
-			}).ToList();
-
-			return subImages;
-		}
-
-        private List<SubImagesDto> GetListSubImageDto(Product product)
-        {
-            var subImages = product.SubImages;
-            var subImageDtos = subImages.Select(s => new SubImagesDto
-            {
-                Id = s.Id,
-                ImageName = s.ImageName,
-                ProductId = s.ProductId
-            }).ToList();
-
-            return subImageDtos;
-        }
     }
-
 }
