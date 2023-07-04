@@ -62,7 +62,6 @@ namespace API
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICartRepository, CartRepository>();
-            services.AddScoped<ISubImageRepository, SubImageRepository>();
             services.AddIdentityServices();
             services.AddIdentityTokenConfig(Configuration);
             services.AddTokenAuthentication(Configuration);
