@@ -33,7 +33,7 @@ namespace Infrastructure.Repositories
 
                 var result = await CreateOrdersAsync(order);
 
-                return Tuple.Create(result , "Created Order Success !");
+                return Tuple.Create(result, "Created Order Success !");
 
             }
             catch (Exception exception)
@@ -48,8 +48,8 @@ namespace Infrastructure.Repositories
             var baseInformations = await GetBasicInformation();
 
             var orders = orderDetails.Join(baseInformations, o => o.OrderId, b => b.OrderId,
-                                     (o, b) => new { o.OrderId, o.Discount, b.OrderDate, b.CustomerName, b.IsPaid, b.TotalPrice, b.ShipAddress })
-                                     .GroupBy(x => new { x.OrderId, x.OrderDate, x.IsPaid, x.TotalPrice, x.Discount, x.ShipAddress, x.CustomerName })
+                                     (o, b) => new { o.OrderId, b.OrderDate, b.CustomerName, b.IsPaid, b.TotalPrice, b.ShipAddress })
+                                     .GroupBy(x => new { x.OrderId, x.OrderDate, x.IsPaid, x.TotalPrice, x.ShipAddress, x.CustomerName })
                                      .Select(x => new OrderAggregate
                                      {
                                          BaseInformation = new BaseModel
@@ -60,10 +60,9 @@ namespace Infrastructure.Repositories
                                              IsPaid = x.Key.IsPaid,
                                              TotalPrice = x.Key.TotalPrice
                                          },
-                                         Discount = x.Key.Discount,
                                          OrderProductsQuantity = x.Count()
                                      }).ToList();
-            return orders;
+            return orders.OrderByDescending(o => o.BaseInformation.OrderDate).ToList(); ;
         }
 
         public async Task<List<OrderDetailAggregate>> GetAggregatedOrderDetailAsync()
@@ -115,7 +114,7 @@ namespace Infrastructure.Repositories
         public async Task<bool> UpdateOrderPaidStatusAsync(Guid orderId)
         {
             var orderEntity = await _appDbContext.Orders.FindAsync(orderId);
-            if(orderEntity == null)
+            if (orderEntity == null)
             {
                 return false;
             }

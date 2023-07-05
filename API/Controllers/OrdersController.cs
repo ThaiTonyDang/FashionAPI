@@ -57,7 +57,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Route("orders")]
+        [Route("order-information")]
         public async Task<IActionResult> GetListOrder()
         {
             var orders = await _orderService.GetAggregatedOrderListAsync();
@@ -138,7 +138,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Route("customers/{orderId}")]
+        [Route("base-information/{orderId}")]
         public async Task<IActionResult> GetOrderedBaseInformation(string orderId)
         {
             if (!orderId.IsConvertToGuid())
@@ -168,27 +168,6 @@ namespace API.Controllers
                 IsSuccess = true,
                 Message = message,
                 Data = baseInformation,
-            });
-        }
-
-        [HttpPut]
-        [Route("paid-status-update")]
-        public async Task<IActionResult> UpdatePayStatus(OrderDto orderDto)
-        {
-
-            var result = await _orderService.UpdateOrderPaidStatusAsync(orderDto.Id);
-            if (result)
-            {
-                return Ok(new
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    IsSuccess = true,
-                });
-            }
-            return NotFound(new
-            {
-                StatusCode = (int)HttpStatusCode.NotFound,
-                IsSuccess = false,
             });
         }
     }
