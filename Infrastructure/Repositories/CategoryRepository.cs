@@ -115,7 +115,5 @@ namespace Infrastructure.Repositories
             var categories = (await qr.ToListAsync()).Where(c => c.ParentCategory == null).ToList();
             return categories;
         }
-
-
     }
 }
