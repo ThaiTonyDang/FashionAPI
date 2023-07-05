@@ -137,5 +137,10 @@ namespace Infrastructure.Repositories
 
             return false;
         }
+
+        public Task<int> GetTotal()
+        {
+            return _appDbContext.Orders.CountAsync();
+        }
     }
 }

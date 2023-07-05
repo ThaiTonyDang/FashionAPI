@@ -209,6 +209,15 @@ namespace API.Controllers
                 IsSuccess = false,
                 Message = $"{message}"
             });
-        }      
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("total")]
+        public async Task<IActionResult> GetTotal()
+        {
+            var total = await _categotyService.GetTotalCategory();
+            return Ok(total);
+        }
     }
 }

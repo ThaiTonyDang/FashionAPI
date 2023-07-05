@@ -17,5 +17,6 @@ namespace Domain.Services
         public Task<Tuple<BaseInformationDto, string>> GetOrderedBaseInformationAsync(Guid orderId);
         public Task<Tuple<List<ProductDto>, string>> GetOrderedProductListAsync(Guid orderId);
         public Task<List<OrderDetailAggregateDto>> GetAggregatedOrderDetailListAsync();
+        public Task<int> GetTotal();
     }
 }

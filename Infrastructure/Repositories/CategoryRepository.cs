@@ -116,6 +116,10 @@ namespace Infrastructure.Repositories
             return categories;
         }
 
+        public Task<int> GetTotal()
+        {
+            return _appDbContext.Categories.CountAsync();
+        }
 
     }
 }

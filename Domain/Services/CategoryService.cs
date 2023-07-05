@@ -161,5 +161,10 @@ namespace Domain.Services
                 productDtos.Add(productDto);
             }             
         }
+
+        public Task<int> GetTotalCategory()
+        {
+            return _categoryRepository.GetTotal();
+        }
     }
 }

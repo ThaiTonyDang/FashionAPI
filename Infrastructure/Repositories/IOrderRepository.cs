@@ -14,5 +14,6 @@ namespace Infrastructure.Repositories
         public Task<List<OrderAggregate>> GettAggregatedOrderListAsync();
         public Task<List<OrderDetailAggregate>> GetAggregatedOrderDetailAsync();
         public Task<bool> UpdateOrderPaidStatusAsync(Guid orderId);
+        public Task<int> GetTotal();
     }
 }

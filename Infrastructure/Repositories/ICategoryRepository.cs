@@ -14,5 +14,6 @@ namespace Infrastructure.Repositories
         public Task<bool> DeleteAsync(Guid id);
         public Task<Category> GetCategoryById(Guid id);
         public Task<List<Category>> GetCategoryListAsync();
+        public Task<int> GetTotal();
     }
 }

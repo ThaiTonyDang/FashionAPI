@@ -170,5 +170,13 @@ namespace API.Controllers
                 Data = baseInformation,
             });
         }
+
+        [HttpGet]
+        [Route("total")]
+        public async Task<IActionResult> GetToal()
+        {
+            var total = await _orderService.GetTotal();
+            return Ok(total);
+        }
     }
 }

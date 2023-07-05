@@ -156,5 +156,10 @@ namespace Domain.Services
 
             return Tuple.Create(products, "Successfully found product list");
         }
+
+        public Task<int> GetTotal()
+        {
+            return _orderRepository.GetTotal();
+        }
     }
 }
