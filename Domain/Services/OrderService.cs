@@ -19,6 +19,23 @@ namespace Domain.Services
         {
             _orderRepository = orderRepository;
         }
+
+        public async Task<List<OrderAggregateDto>> GetAggregatedOrderListAsync()
+        {
+            var listOrder = await _orderRepository.GettAggregatedOrderListAsync();
+            var orders = listOrder.Select(o => new OrderAggregateDto
+            {
+                OrderId = o.BaseInformation.OrderId,
+                CustomerName = o.BaseInformation.CustomerName,
+                IsPaid = o.BaseInformation.IsPaid,
+                OrderDate = o.BaseInformation.OrderDate,
+                OrderProductsQuantity = o.OrderProductsQuantity,
+                TotalPrice = o.BaseInformation.TotalPrice,
+            }).ToList();
+
+            return orders;
+        }
+
         public async Task<Tuple<bool, string>> CreateOrderAsync(OrderDto orderDto)
         {
 
@@ -43,14 +60,14 @@ namespace Domain.Services
                 TotalPrice = orderDto.TotalPrice,
                 UserId = orderDto.UserId,
                 OrderDetails = orderDetails,
-                
+
             };
 
             var result = await _orderRepository.CreateOrderAsync(order);
             return result;
         }
 
-        public async Task<List<OrderDetailAggregateDto>> GetAggregatedOrderDetailByIdAsync(Guid orderId)
+        public async Task<List<OrderDetailAggregateDto>> GetOrderDetailListByIdAsync(Guid orderId)
         {
             var listOrderDetail = await GetAggregatedOrderDetailListAsync();
             var sublistOrderDetail = listOrderDetail.FindAll(l => l.OrderId == orderId);
@@ -90,27 +107,10 @@ namespace Domain.Services
 
             return orders.ToList();
         }
-     
-        public async Task<List<OrderAggregateDto>> GetAggregatedOrderListAsync()
-        {
-            var listOrder = await _orderRepository.GettAggregatedOrderListAsync();
-            var orders = listOrder.Select(o => new OrderAggregateDto
-            {
-                OrderId = o.BaseInformation.OrderId,
-                CustomerName = o.BaseInformation.CustomerName,
-                IsPaid = o.BaseInformation.IsPaid,
-                OrderDate = o.BaseInformation.OrderDate,
-                OrderProductsQuantity = o.OrderProductsQuantity,
-                TotalPrice = o.BaseInformation.TotalPrice,
-                Discount = o.Discount
-            }).ToList();
-
-            return orders;
-        }
 
         public async Task<Tuple<BaseInformationDto, string>> GetOrderedBaseInformationAsync(Guid orderId)
         {
-            var sublistOrderDetail = await GetAggregatedOrderDetailByIdAsync(orderId);
+            var sublistOrderDetail = await GetOrderDetailListByIdAsync(orderId);
 
             if (sublistOrderDetail == null || sublistOrderDetail.Count == 0)
                 return Tuple.Create(default(BaseInformationDto), "Can't find any orders");
@@ -128,9 +128,10 @@ namespace Domain.Services
 
             return Tuple.Create(baseInformation, "Finding success information");
         }
+
         public async Task<Tuple<List<ProductDto>, string>> GetOrderedProductListAsync(Guid orderId)
         {
-            var sublistOrderDetail = await GetAggregatedOrderDetailByIdAsync(orderId);
+            var sublistOrderDetail = await GetOrderDetailListByIdAsync(orderId);
             var products = new List<ProductDto>();
             if (sublistOrderDetail == null || sublistOrderDetail.Count == 0)
                 return Tuple.Create(default(List<ProductDto>), "Can't product list found");
@@ -154,12 +155,6 @@ namespace Domain.Services
             }
 
             return Tuple.Create(products, "Successfully found product list");
-        }
-
-        public async Task<bool> UpdateOrderPaidStatusAsync(Guid orderId)
-        {
-            var result = await _orderRepository.UpdateOrderPaidStatusAsync(orderId);
-            return result;
         }
     }
 }
