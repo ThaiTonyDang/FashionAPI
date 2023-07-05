@@ -22,7 +22,7 @@ namespace Domain.Dtos
 
         [Required(ErrorMessage = "Category is required")]
         public Guid CategoryId { get; set; }
-
+        public string CategoryName { get; set; }
         public string MainImageName { get; set; }
         public bool IsEnabled { get; set; }
         public string Description { get; set; }

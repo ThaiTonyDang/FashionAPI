@@ -56,7 +56,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Paging(int currentPage, int pageSize)
+        public async Task<IActionResult> Paging(int currentPage = 1, int pageSize = 10)
         {
             var pagingProducts = await _productService.GetPagingProductListAsync(currentPage, pageSize);
        
